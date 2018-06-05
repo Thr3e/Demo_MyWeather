@@ -2,10 +2,12 @@
 /**
  * @description 获取DOM对象 
  * @param sel String DOM选择器
+ * @param isAll boolean 是否选择所有元素（忽略为不选择）
  * @return DOM对象
  */
-function getEL(sel) {
-    return document.querySelector(sel);
+function getEL(sel, isAll) {
+    if (isAll) return document.querySelectorAll(sel);
+    else return document.querySelector(sel);
 }
 
 /**

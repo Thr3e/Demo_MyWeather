@@ -1,4 +1,4 @@
-// 
+// --------------today---------------
 function todayFuncs(){
     getLocationData ('location/ip', function (response) {
         var locInfo = response['address'].split('|'); 
@@ -86,17 +86,16 @@ function loadDetailview (dataInfo) {
     var htmlStr = '';
     var updateTime = dataInfo['update']['loc'].slice(11),
         curWeather = dataInfo['now']['tmp'],
-        curText    = dataInfo['now']['cond_text'];
+        curText    = dataInfo['now']['cond_txt'];
     
-    htmlStr += '<div class="detailContent"><div class="titles">' + updateTime + '</div><div class="contents">' + curText + curWeather + '℃' + '</div></div>';
-
-    $('.today_detailview').html(htmlStr);
+    htmlStr += '<div class="detailContent"><div class="titles">' + updateTime + '</div><div class="contents">' + curText + ' ' + curWeather + '℃' + '</div></div>';
+    $('#today_detailview').html(htmlStr);
 
 
 }
 
 
-// 
+// ------------collection------------
 function collectionFuncs() {  
     $('.topleft_btn').children().attr({ class : 'iconfont icon-zhuce' }).click(function(e) {
         $('.log_btn').html('注     册').click(verifyInput);
@@ -116,12 +115,12 @@ function verifyInput (){
     verifyUserInfo('.user_email', /^.?@\w+\.\w+$/);
     verifyUserInfo('.user_tel', /^1\d{10}$/);
 }
-//
+//---------------news---------------
 function newsFuncs() {
 
 }
 
-//
+//---------------more---------------
 function moreFuncs() {
 
 }

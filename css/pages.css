@@ -52,6 +52,7 @@
 
 #today_detailview .titles{
     width: 30%;
+    text-align: right;
     background: red;
 }
 
