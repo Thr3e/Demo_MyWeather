@@ -1,0 +1,172 @@
+@charset 'UTF-8';
+
+/* --------------------today-------------------- */
+#today_mainview {
+    text-align: center;
+    color: #59606d;
+}
+
+#today_mainview .weather_img {
+    width: 200px;
+    height: 200px;
+    background: #eee;
+    margin: 10px auto;
+}
+
+#today_mainview .time_info {
+    font-size: .5rem;
+    margin: 5px auto;
+    color: #a89786;
+}
+
+#today_mainview .degree_info {
+    font-size: 24px;
+}
+
+#today_mainview .weather_info {
+    font: normal bold 30px '楷体';
+}
+
+#today_mainview .quality_info {
+    font-size: .5rem;
+    display: inline-block;
+    background: #ffcc00;
+    padding: 1px 5px;
+    border-radius: 2px;
+    color: #fff;
+}
+
+#today_mainview .weather_week {
+    height: 100px;
+    background: #eee;
+    margin: 20px auto;
+    box-shadow: 0 3px 5px 0 #999;
+}
+
+#today_detailview .detailContent{
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+#today_detailview .titles{
+    width: 30%;
+    background: red;
+}
+
+#today_detailview .contents{
+    width: 70%;
+    background: blue;
+}
+
+/* ------------------collection----------------- */
+#login_page {
+    text-align: center;
+    overflow: hidden;
+}
+
+#login_page .logo {
+    width: 256px;
+    height: 256px;
+    background: #999;
+    margin: 72px auto;
+    border-radius: 50%;
+}
+
+#login_page .login_wrap {
+    height: 100px;
+    overflow: hidden;
+    transition: all .25s linear;
+}
+
+#login_page .login_wrap input{
+    display: block;
+    width: 300px;
+    height: 30px;
+    margin: 20px auto;
+    font-size: 20px;
+    line-height: 30px;
+    letter-spacing: 1px;
+    color: #59606d;
+    background: #c6f1e7;
+    border-radius: 5px;
+    padding-left: 15px;
+}
+
+#login_page form > div {
+    position: relative;
+}
+
+#login_page form > div::before{
+    display: block;
+    width: 0;
+    height: 0;
+    border-bottom: 8px solid #b00;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    content: '';
+    position: absolute;
+    top: 12px;
+    right: 21px;
+}
+
+
+#login_page form > div .wrong_tag {
+    display: none;
+    width: 16px;
+    height: 16px;
+    background: #b00;
+    position: absolute;
+    top: 4px;
+    right: 13px;
+    font-size: 0.5rem;
+    color: #fff;
+}
+
+#login_page .login_wrap .verf_code {
+    width: 160px;
+    display: inline-block;
+    vertical-align: top;
+    margin: 0 13px 0 0;
+}
+
+#login_page .verif_text {
+    display: inline-block;
+    width: 120px;
+    height: 35px;
+    color: #fff;
+    font-size: 16px;
+    letter-spacing: 5px;
+    line-height: 35px;
+    text-align: center;
+    background: linear-gradient(to bottom right,rgba(238,162,229,0.84),cornflowerblue);
+    cursor: pointer;
+}
+
+#login_page .tips{
+    opacity: 0;
+    position: absolute;
+    top: 6px;
+    right: 42px;
+    font-size: .5rem;
+    border: 1px solid #000;
+    border-radius: 5px;
+}
+
+#login_page .log_btn {
+    background: #70acb1;
+    font-weight: bold;
+    font-size: 26px;
+    white-space: pre;
+    height: 40px;
+    line-height: 40px;
+    width: 280px;
+    margin: 15px auto 0;
+    border-radius: 8px;
+    color: #f0fff3;
+}
+
+
+/* --------------------news--------------------- */
+/* --------------------more--------------------- */

@@ -6,16 +6,21 @@
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>MyWeather</title>
-    <link rel="stylesheet" href="./Thr3e/css/normalized.css">
-    <link rel="stylesheet" href="#" class="page_css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_693311_5ciijuzi7rlr3sor.css">
+    <link rel="stylesheet" href="./plugins/Thr3e/css/normalized.css">
+    <link rel="stylesheet" ohref="./css/pages.css">
     <link rel="stylesheet" href="./css/index.css">
 </head>
 <body>
 <header id="header">
     <div class="top-banner">
-        <div class="left icon-btn">@</div>
-        <div class="title">定位</div>
-        <div class="right icon-btn">+</div>
+        <div class="topleft_btn"><i class="iconfont icon-jia"></i></div>
+        <div id="title">
+            <i class="iconfont icon-dingwei"></i>
+            <p class="city">定位中...</p>
+            <p class="province"></p>
+        </div>
+        <div class="topright_btn"><i class="iconfont icon-jia"></i></div>
     </div>
 </header>
 <main id="content"></main>
@@ -31,8 +36,9 @@
     </div>
 </footer>
 
-<script src="./plugs/jquery-3.3.1.min.js"></script>
-<script src="./Thr3e/js/common.js"></script>
+<script src="./plugins/jquery-3.3.1.min.js"></script>
+<script src="./plugins/Thr3e/js/common.js"></script>
+<script src="./js/pagesFunc.js"></script>
 <script src="./js/index.js"></script>
 </body>
 </html>

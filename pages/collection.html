@@ -1,16 +1,39 @@
-
-<div class="colletion_wrap clearFix">
-    <div class="location_line fl">
-        <table class="head_title">
-            <tr>
-                <td rowspan="2"><span class="day">02</span></td>
-                <td><span class="month">6月</span></td>
-            </tr>
-            <tr>
-                <td><span class="week_day">周六</span></td>
-            </tr>
-        </table>
+<div id="login_page">
+    <div class="logo"></div>
+    <div class="login_wrap">
+        <form action="#">
+            <div>
+                <input type="text" class="user_name user_ipt" placeholder="请输入登录名">
+                <p class="tips">长度6-20字符，首字符为字母</p>
+                <div class="wrong_tag"><i class="iconfont icon-cuo"></i></div>
+            </div>
+            <div>
+                <input type="password" class="user_pwd user_ipt" placeholder="请输入密码">
+                <p class="tips"></p>
+                <div class="wrong_tag"><i class="iconfont icon-cuo"></i></div>
+            </div>
+            <div>
+                <input type="password" class="conf_pwd user_ipt" placeholder="确认密码">
+                <p class="tips"></p>
+                <div class="wrong_tag"><i class="iconfont icon-cuo"></i></div>
+            </div>
+            <div>
+                <input type="email" class="user_email user_ipt" placeholder="请输入邮箱">
+                <p class="tips"></p>
+                <div class="wrong_tag"><i class="iconfont icon-cuo"></i></div>
+            </div>
+            <div>
+                <input type="tel" class="user_tel user_ipt" placeholder="请输入电话">
+                <p class="tips"></p>
+                <div class="wrong_tag"><i class="iconfont icon-cuo"></i></div>
+            </div>
+            <div>
+                <input type="text" class="verf_code user_ipt" placeholder="请输入验证码">
+                <p class="tips"></p>
+                <div class="verif_text"></div>
+                <div class="wrong_tag"><i class="iconfont icon-cuo"></i></div>
+            </div> 
+        </form>
     </div>
+    <div class="log_btn">登     录</div>
 </div>
-
-<script src="./js/collection.js"></script>
