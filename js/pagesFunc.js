@@ -1,21 +1,24 @@
 // --------------today---------------
+var WeatherData = {},
+    AirData     = {};
 function todayFuncs(){
     getLocationData ('location/ip', function (response) {
         var locInfo = response['address'].split('|'); 
         $('#title').find('.city').text(locInfo[2] + '市');   
         $('#title').find('.province').text(locInfo[1] + '省');
         getWeatherData ('weather', locInfo[2], function (response) {
-            console.log(response);
-            var dataInfo = response['HeWeather6']['0'],
-                todayInfo = dataInfo['daily_forecast'][0];
-            loadMainview (dataInfo);
-            loadDetailview (dataInfo);
+            WeatherData = response['HeWeather6']['0'];
+            console.log(WeatherData);
+            var todayInfo = WeatherData['daily_forecast'][0];
+            loadMainview (WeatherData);
+            loadDetailview (WeatherData);
             $('.today-weather').text(todayInfo['tmp_min'] + '-' + todayInfo['tmp_max'] + '℃');
         });
         getWeatherData ('air/now', locInfo[2], function (response) {
-            console.log(response['HeWeather6']['0']);
-            var aqi = parseInt(response['HeWeather6']['0']['air_now_city']['aqi']);
-            $('.quality_info').text(aqi + ' 空气质量' + response['HeWeather6']['0']['air_now_city']['qlty']);
+            AirData = response['HeWeather6']['0'];
+            console.log(AirData);
+            var aqi = parseInt(AirData['air_now_city']['aqi']);
+            $('.quality_info').text(aqi + ' 空气质量' + AirData['air_now_city']['qlty']);
             switch (parseInt(aqi / 50)) {
                 case 0 : $('.quality_info').css({'background': '#ffcc00'});break;
                 case 1 : $('.quality_info').css({'background': '#ff8800'});break;
@@ -59,9 +62,8 @@ function loadMainview (dataInfo) {
         todaInfo = dataInfo['daily_forecast'][0],
         nowInfo = dataInfo['now'];
     var curIndex = 0;
-    if (time.slice(0, 1) === '下'){
-        time = parseInt(time.slice(2, time.length - 3)) + 12 + time.slice(time.length - 3);
-    }
+    time = time.slice(0, 1) === '下' ? parseInt(time.slice(2, time.length - 3)) + 12 + time.slice(time.length - 3) : time.slice(2, time.length - 6) + time.slice(time.legnth - 6, time.length - 3);
+    
     var curHtml = [{
         'time' : "今天·周" + "日一二三四五六".charAt(d.getDay()),
         'weather' : todaInfo['tmp_min'] + '-' + todaInfo['tmp_max'] + '℃'
@@ -84,14 +86,57 @@ function loadMainview (dataInfo) {
 
 function loadDetailview (dataInfo) {
     var htmlStr = '';
-    var updateTime = dataInfo['update']['loc'].slice(11),
-        curWeather = dataInfo['now']['tmp'],
-        curText    = dataInfo['now']['cond_txt'];
-    
-    htmlStr += '<div class="detailContent"><div class="titles">' + updateTime + '</div><div class="contents">' + curText + ' ' + curWeather + '℃' + '</div></div>';
+
+    htmlStr +=   joinHtmlString (dataInfo['update']['loc'].slice(11),
+                                `${dataInfo['now']['cond_txt']}&nbsp${dataInfo['now']['tmp']}℃`,
+                                `<tr>
+                                    <td>降雨量${dataInfo['now']['pcpn']}</td>
+                                    <td>湿度${dataInfo['now']['hum']}</td>
+                                </tr>
+                                <tr>
+                                    <td>${dataInfo['now']['wind_dir']}&nbsp${dataInfo['now']['wind_sc']}</td>
+                                    <td>体感温度${dataInfo['now']['fl']}</td>
+                                </tr>
+                                <tr>
+                                    <td>能见度${dataInfo['now']['vis']}</td>
+                                </tr>`
+                );
+    htmlStr +=  joinHtmlString  ("",
+                                `生活指数`,
+                                `<tr>
+                                    <td>舒适度&nbsp${dataInfo['lifestyle'][0]['brf']}</td>
+                                    <td>穿衣&nbsp${dataInfo['lifestyle'][1]['brf']}</td>
+                                </tr>
+                                <tr>
+                                    <td>紫外线&nbsp${dataInfo['lifestyle'][5]['brf']}</td>
+                                    <td>感冒&nbsp${dataInfo['lifestyle'][2]['brf']}</td>
+                                </tr>
+                                <tr>
+                                    <td>运动&nbsp${dataInfo['lifestyle'][3]['brf']}</td>
+                                    <td>交通&nbsp${dataInfo['lifestyle'][4]['brf']}</td>
+                                </tr>`
+                                )
     $('#today_detailview').html(htmlStr);
+}
 
-
+function joinHtmlString(title, content, detail) {
+    return `
+    <div class="detailContent">
+        <div class="title">
+                ${title}
+            </div>
+            <div class="content">
+                <div class="cont_title">
+                    ${content}
+                </div>
+                <div class="detail">
+                    <table>
+                        ${detail}
+                    </table>
+                </div>
+            </div>
+        </div>
+    `;
 }
 
 

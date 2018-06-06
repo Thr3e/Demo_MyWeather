@@ -43,6 +43,10 @@
     box-shadow: 0 3px 5px 0 #999;
 }
 
+#today_detailview {
+    margin-bottom: 10px;
+}
+
 #today_detailview .detailContent{
     width: 100%;
     display: flex;
@@ -50,13 +54,13 @@
     align-items: flex-start;
 }
 
-#today_detailview .titles{
+#today_detailview .title{
     width: 30%;
     text-align: right;
     background: red;
 }
 
-#today_detailview .contents{
+#today_detailview .content{
     width: 70%;
     background: blue;
 }
