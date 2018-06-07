@@ -31,28 +31,34 @@ function getWeatherData (url, location, success){
 function loadMainview (dataInfo) {
     var d = new Date(),
         time = getFullLocalHour(d.toLocaleTimeString()),
-        todaInfo = dataInfo['daily_forecast'][0],
+        todayInfo = dataInfo['daily_forecast'][0],
         nowInfo = dataInfo['now'];
     var curIndex = 0;
     
     var curHtml = [{
+        'icon' : getWeatherImgUrl(dataInfo['daily_forecast'][0]),
         'time' : "今天·周" + "日一二三四五六".charAt(d.getDay()),
-        'weather' : todaInfo['tmp_min'] + '-' + todaInfo['tmp_max'] + '℃'
+        'weather' : todayInfo['tmp_min'] + '-' + todayInfo['tmp_max'] + '℃',
+        'text' : isNowNight() ? todayInfo['cond_txt_n'] : todayInfo['cond_txt_d']
     },{
+        'icon' : getWeatherImgUrl(dataInfo['now']),
         'time' : "现在·" + time,
-        'weather' : nowInfo['tmp'] + '℃'
+        'weather' : nowInfo['tmp'] + '℃',
+        'text' : nowInfo['cond_txt']
     }];
     
+    $('.weather_img').html(`<img src="${curHtml[curIndex]['icon']}" alt="">`);
     $('.time_info').text(curHtml[curIndex]['time']);
     $('.degree_info').text(curHtml[curIndex]['weather']);
+    $('.weather_info').text(curHtml[curIndex]['text']);
     var t = setInterval(function(){
         if (curIndex === 0) curIndex = 1;
         else curIndex = 0;
+        $('.weather_img').html(`<img src="${curHtml[curIndex]['icon']}" alt="">`);
         $('.time_info').text(curHtml[curIndex]['time']);
         $('.degree_info').text(curHtml[curIndex]['weather']);
+        $('.weather_info').text(curHtml[curIndex]['text']);
     },4000);
-
-    $('.weather_info').text(nowInfo['cond_txt']);
 }
 
 function loadDetailview () {
@@ -102,8 +108,8 @@ function loadDetailview () {
                                 </tr></table>`
                                 );
     htmlStr +=  joinHtmlString  ("",
-                                `今日限行尾号:${getLimitNum(new Date().getDay())}`,
-                                `明日现行尾号:${getLimitNum(new Date().getDay() + 1)}`
+                                `今日限行尾号:&nbsp${getLimitNum(new Date().getDay())}`,
+                                `明日现行尾号:&nbsp${getLimitNum(new Date().getDay() + 1)}`
                                 );
     htmlStr += joinHtmlString   ('明天',
                                 `${WeatherData['daily_forecast'][1]['cond_txt_d']}&nbsp${WeatherData['daily_forecast'][1]['tmp_min'] + '-' + WeatherData['daily_forecast'][1]['tmp_max'] + '℃'}`,
@@ -204,4 +210,31 @@ function setRegPage (){
         $(this).text(getVerificationCode(4));
     }); 
     $(this).click(setLogPage);
+}
+
+function getWeatherImgUrl (obj) {
+    var endStr = '.png',
+        tmpArr = ['100', '103', '104', '300', '301', '406', '407'];
+    tmpArr.forEach(function(val, idx, arr){
+        if (obj['cond_code_n'] === val || obj['cond_code'] === val) {
+            endStr = 'n.png';
+        }
+    });
+    if (obj['cond_code']){
+        return `./imgs/weather-icon/${obj['cond_code']}${endStr}`;
+    }else if (obj['cond_code_n']){
+        var condCode = isNowNight() ? obj['cond_code_n'] : obj['cond_code_d'];
+        return `./imgs/weather-icon/${condCode}${endStr}`;
+    } else {
+        throw ('参数错误');
+    }
+}
+
+function isNowNight () {
+    var d = new Date().toLocaleTimeString();
+    if ((d.match(/下午/) && parseInt(d.slice(2)) > 7) || (d.match(/上午/) && (parseInt(d.slice(2)) < 7) || parseInt(d.slice(2)) === 12)){
+        return true;
+    } else {
+        return false;
+    }
 }
