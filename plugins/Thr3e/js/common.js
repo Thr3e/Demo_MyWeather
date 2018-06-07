@@ -89,21 +89,3 @@ function getVerificationCode(length) {
     }
     return resStr;
 }
-
-/**
- * @description 正则表达式匹配
- * @param String 被匹配的输入框选择器
- * @param String 正则表达式规则
- * @return 匹配结果，如未匹配成功返回null
- */
-
- function verifyUserInfo(sel, regx){
-     debugger;
-     var el = document.querySelector(sel);
-     if (el.value && el.value.match(regx)){
-         console.log(sel + "right");
-     } else if (el.value) {
-         el.nextElementSibling.style.opacity = '1';
-        el.nextElementSibling.nextElementSibling.style.display = 'block';
-     }
- }

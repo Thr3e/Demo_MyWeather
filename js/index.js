@@ -23,5 +23,13 @@ $(function () {
             case 2 : newsFuncs();break;
             case 3 : moreFuncs();break;
         }
+    // });
     }).first().trigger('click');
+
+    $('.topright_btn').children().click(function() {
+        $('#login_page').css('left', '0');
+        setLogPage();
+        $('.log_btn').click(logFunc);
+        $('.reg_btn').click(regFunc);
+    });
 });
