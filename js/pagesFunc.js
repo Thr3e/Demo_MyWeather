@@ -15,7 +15,7 @@ function todayFuncs(){
         });
         getWeatherData ('air/now', locInfo[2], function (response) {
             AirData = response['HeWeather6']['0'];
-            loadDetailview ();
+            setTimeout(loadDetailview, 1000);
             console.log(AirData);
             var aqi = parseInt(AirData['air_now_city']['aqi']);
             $('.quality_info').text(aqi + ' 空气质量' + AirData['air_now_city']['qlty']);
