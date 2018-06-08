@@ -177,6 +177,66 @@ body {
     color: #f0fff3;
 }
 
+/* 搜索页样式 */
+#search_page {
+    background: #70acb1;
+    width: 70%;
+    height: 100%;
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: -70%;
+    color: #f0fff3;
+    transition: all .25s linear;
+}
+
+#search_page .head i {
+    display: block;
+    margin: 10px;
+}
+
+#search_page input {
+    width: calc(100% - 20px);
+    height: 30px;
+    margin: 20px 10px;
+    display: block;
+    background: #f0fff3;
+    color: #59606d;
+    padding-left: 5px;
+    border: 1px solid #59606d;
+    border-radius: 5px;
+}
+
+#search_page .city_wrap {
+    margin: 20px 10px;
+}
+
+#search_page .locate .title {
+    line-height: 30px;
+    margin-right: 10px;
+    margin-bottom: 0;
+}
+
+#search_page .title {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+#search_page .city_btn {
+    border: 1px solid #59606d;
+    margin: 3px 5px;
+    display: inline-block;
+    padding: 2px 5px;
+    border-radius: 10px;
+    line-height: 20px;
+    font-size: .5rem;
+    letter-spacing: 3px;
+    background: #59606d;
+}
+
+
+
+
 /* 主要内容样式 */
 #content {
     height: calc(100% - 59px - 40px);

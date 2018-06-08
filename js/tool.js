@@ -291,3 +291,53 @@ function getAirIcon (obj) {
         case 5 : return 'icon-angry';
     }
 }
+
+function loadSearchPage () {
+    $('#search_page').css('left','0');
+    $('.search_back_icon').click(function(){$('#search_page').css('left', '-70%')});
+    var curCity = [],
+        chooseCity = [],
+        hotCity = ['重庆','香港','上海','北京','深圳','武汉','成都','杭州','澳门','苏州'];
+    getLocationData ('location/ip', function (response) {
+        curCity.push(response['address'].split('|')[2]); 
+        setCityBtn(curCity, '.locate .btn_wrap');
+    });
+    City_Info.forEach(function(val, idx, arr){
+        chooseCity.push(val['province'].slice(0,val['province'].indexOf(',')));
+    })
+    setCityBtn(chooseCity, '.choose .btn_wrap');
+    setCityBtn(hotCity, '.hot .btn_wrap');
+    $('.locate .city_btn, .hot .city_btn').click(function(){
+        getWeatherData ('weather', $(this).text(), function (response) {
+            var wthData = response['HeWeather6']['0'],
+                todayInfo = wthData['daily_forecast'][0];
+            loadMainview (wthData);
+            $('.today-weather').text(todayInfo['tmp_min'] + '-' + todayInfo['tmp_max'] + '℃');
+        });
+        getWeatherData ('air/now', $(this).text(), function (response) {
+            AirData = response['HeWeather6']['0'];
+            setTimeout(loadDetailview, 1000);
+            console.log(AirData);
+            var aqi = parseInt(AirData['air_now_city']['aqi']);
+            $('.quality_info').text(aqi + ' 空气质量' + AirData['air_now_city']['qlty']);
+            switch (parseInt(aqi / 50)) {
+                case 0 : $('.quality_info').css({'background': '#ffcc00'});break;
+                case 1 : $('.quality_info').css({'background': '#ff8800'});break;
+                case 2 : $('.quality_info').css({'background': '#ff4400'});break;
+                case 3 : $('.quality_info').css({'background': '#ff0000'});break;
+                case 4 : $('.quality_info').css({'background': '#bb0000'});break;
+                case 5 : $('.quality_info').css({'background': '#770000'});break;
+            }
+        });
+        $('#search_page').css('left', '-70%');
+    })
+
+}
+
+function setCityBtn(arr, sel) {
+    var htmlStr = '';
+    arr.forEach(function(val, idx, arr) {
+        htmlStr += `<div class="city_btn">${val}</div>`;
+    })
+    $(sel).html(htmlStr);
+}

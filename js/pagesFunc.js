@@ -3,17 +3,17 @@ var WeatherData = {},
     AirData     = {};
 function todayFuncs(){
     getLocationData ('location/ip', function (response) {
-        var locInfo = response['address'].split('|'); 
-        $('#title').find('.city').text(locInfo[2] + '市');   
-        $('#title').find('.province').text(locInfo[1] + '省');
-        getWeatherData ('weather', locInfo[2], function (response) {
+        var locatData = response['address'].split('|'); 
+        $('#title').find('.city').text(locatData[2] + '市');   
+        $('#title').find('.province').text(locatData[1] + '省');
+        getWeatherData ('weather', locatData[2], function (response) {
             WeatherData = response['HeWeather6']['0'];
             console.log(WeatherData);
             var todayInfo = WeatherData['daily_forecast'][0];
             loadMainview (WeatherData);
             $('.today-weather').text(todayInfo['tmp_min'] + '-' + todayInfo['tmp_max'] + '℃');
         });
-        getWeatherData ('air/now', locInfo[2], function (response) {
+        getWeatherData ('air/now', locatData[2], function (response) {
             AirData = response['HeWeather6']['0'];
             setTimeout(loadDetailview, 1000);
             console.log(AirData);

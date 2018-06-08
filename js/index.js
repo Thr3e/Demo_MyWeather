@@ -32,4 +32,6 @@ $(function () {
         $('.log_btn').click(logFunc);
         $('.reg_btn').click(regFunc);
     });
+
+    $('.topleft_btn').children().click(loadSearchPage);
 });
