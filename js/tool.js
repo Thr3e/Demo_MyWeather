@@ -30,7 +30,6 @@ function getWeatherData (url, location, success){
 
 function loadMainview (dataInfo) {
     var d = new Date(),
-        time = getFullLocalHour(d.toLocaleTimeString()),
         todayInfo = dataInfo['daily_forecast'][0],
         nowInfo = dataInfo['now'];
     var curIndex = 0;
@@ -42,7 +41,7 @@ function loadMainview (dataInfo) {
         'text' : isNowNight() ? todayInfo['cond_txt_n'] : todayInfo['cond_txt_d']
     },{
         'icon' : getWeatherImgUrl(dataInfo['now']),
-        'time' : "现在·" + time,
+        'time' : "现在·" + getFullLocalHour(d.toLocaleTimeString()),
         'weather' : nowInfo['tmp'] + '℃',
         'text' : nowInfo['cond_txt']
     }];
@@ -65,21 +64,35 @@ function loadDetailview () {
     var htmlStr = $('#today_detailview').html();
 
     htmlStr +=   joinHtmlString (WeatherData['update']['loc'].slice(11),
+                                `${getWeatherIcon(WeatherData['now']['cond_code'])}`,
                                 `${WeatherData['now']['cond_txt']}&nbsp${WeatherData['now']['tmp']}℃`,
                                 `<table><tr>
-                                    <td>降雨量&nbsp${WeatherData['now']['pcpn']}</td>
-                                    <td>湿度&nbsp${WeatherData['now']['hum']}</td>
+                                    <td>
+                                        降雨量&nbsp${WeatherData['now']['pcpn']}
+                                    </td>
+                                    <td>
+                                        湿度&nbsp${WeatherData['now']['hum']}
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <td>${WeatherData['now']['wind_dir']}&nbsp${WeatherData['now']['wind_sc']}级</td>
-                                    <td>体感温度&nbsp${WeatherData['now']['fl']}</td>
+                                    <td>
+                                        ${WeatherData['now']['wind_dir']}&nbsp${WeatherData['now']['wind_sc']}级
+                                    </td>
+                                    <td>
+                                        体感温度&nbsp${WeatherData['now']['fl']}
+                                    </td>
                                 </tr>
                                 <tr>
-                                    <td>能见度&nbsp${WeatherData['now']['vis']}</td>
-                                    <td>夜间天气&nbsp${WeatherData['daily_forecast'][2]['cond_txt_n']}</td>
+                                    <td>
+                                        能见度&nbsp${WeatherData['now']['vis']}
+                                    </td>
+                                    <td>
+                                        夜间天气&nbsp${WeatherData['daily_forecast'][2]['cond_txt_n']}
+                                    </td>
                                 </tr></table>`
                                 );
     htmlStr +=  joinHtmlString  ("",
+                                `${getAirIcon(AirData)}`,
                                 `空气指数:&nbsp${AirData['air_now_city']['aqi']}&nbsp${AirData['air_now_city']['qlty']}`,
                                 `<table><tr>
                                     <td>PM2.5&nbsp${AirData['air_now_city']['pm25']}</td>
@@ -93,6 +106,7 @@ function loadDetailview () {
                                 </tr></table>`
                                 );                            
     htmlStr +=  joinHtmlString  ("",
+                                'icon-aixin',
                                 `生活指数`,
                                 `<table><tr>
                                     <td>舒适度&nbsp${WeatherData['lifestyle'][0]['brf']}</td>
@@ -108,10 +122,12 @@ function loadDetailview () {
                                 </tr></table>`
                                 );
     htmlStr +=  joinHtmlString  ("",
+                                'icon-hangche',
                                 `今日限行尾号:&nbsp${getLimitNum(new Date().getDay())}`,
                                 `明日现行尾号:&nbsp${getLimitNum(new Date().getDay() + 1)}`
                                 );
     htmlStr += joinHtmlString   ('明天',
+                                `${getWeatherIcon(WeatherData['daily_forecast'][1]['cond_code_d'])}`,
                                 `${WeatherData['daily_forecast'][1]['cond_txt_d']}&nbsp${WeatherData['daily_forecast'][1]['tmp_min'] + '-' + WeatherData['daily_forecast'][1]['tmp_max'] + '℃'}`,
                                 `<table><tr>
                                     <td>夜间天气&nbsp${WeatherData['daily_forecast'][1]['cond_txt_n']}</td>
@@ -123,6 +139,7 @@ function loadDetailview () {
                                 </tr></table>`
                                 );
     htmlStr += joinHtmlString   ('后天',
+                                `${getWeatherIcon(WeatherData['daily_forecast'][2]['cond_code_d'])}`,
                                 `${WeatherData['daily_forecast'][2]['cond_txt_d']}&nbsp${WeatherData['daily_forecast'][2]['tmp_min'] + '-' + WeatherData['daily_forecast'][2]['tmp_max'] + '℃'}`,
                                 `<table><tr>
                                     <td>夜间天气&nbsp${WeatherData['daily_forecast'][2]['cond_txt_n']}</td>
@@ -136,7 +153,7 @@ function loadDetailview () {
     $('#today_detailview').html(htmlStr);
 }
 
-function joinHtmlString(title, content, detail) {
+function joinHtmlString(title, attr, content, detail) {
     return `
     <div class="detailContent">
         <div class="title">
@@ -145,6 +162,7 @@ function joinHtmlString(title, content, detail) {
             <div class="content">
                 <div class="cont_title">
                     ${content}
+                    <i class="iconfont ${attr}"></i>
                 </div>
                 <div class="detail">
                     ${detail}
@@ -155,7 +173,7 @@ function joinHtmlString(title, content, detail) {
 }
 
 function getLimitNum (day) {
-    return (day === 0) || (day === 6) ? "今日不限行" : `${day} & ${day === 5 ? 0 : day + 5}`;
+    return (day === 0) || (day === 6) ? "不限行" : `${day} & ${day === 5 ? 0 : day + 5}`;
 }
 
 function verifyUserInfo(el, regx){
@@ -216,7 +234,7 @@ function getWeatherImgUrl (obj) {
     var endStr = '.png',
         tmpArr = ['100', '103', '104', '300', '301', '406', '407'];
     tmpArr.forEach(function(val, idx, arr){
-        if (obj['cond_code_n'] === val || obj['cond_code'] === val) {
+        if ((obj['cond_code_n'] === val || obj['cond_code'] === val) && isNowNight()) {
             endStr = 'n.png';
         }
     });
@@ -236,5 +254,40 @@ function isNowNight () {
         return true;
     } else {
         return false;
+    }
+}
+
+function getWeatherIcon (obj){
+    if (obj.match(/100/)) return 'icon-qing';
+    else if (obj.match(/10[1-3]/)) return 'icon-duoyun';
+    else if (obj.match(/104/)) return 'icon-yin';
+    else if (obj.match(/20[0-4]/)) return 'icon-feng';
+    else if (obj.match(/20[5-7]/)) return 'icon-dafeng';
+    else if (obj.match(/2(08|09|1[0-3])/)) return 'icon-longjuanfeng';
+    else if (obj.match(/300/)) return 'icon-zhenyu';
+    else if (obj.match(/31[0-3]/)) return 'icon-baoyu';
+    else if (obj.match(/30[2-4]/)) return 'icon-leizhenyu';
+    else if (obj.match(/30(5|[8-9])/)) return 'icon-xiaoyu';
+    else if (obj.match(/3(06|1[4-5])/)) return 'icon-zhongyu';
+    else if (obj.match(/3(07|1[6-8]|99)/)) return 'icon-dayu';
+    else if (obj.match(/4(0[0-1]|99)/)) return 'icon-xiaoxue';
+    else if (obj.match(/40[2-3]/)) return 'icon-daxue';
+    else if (obj.match(/40[4-6]/)) return 'icon-yujiaxue';
+    else if (obj.match(/5(0(0|1|9)|1(0|4|5))/)) return 'icon-wu';
+    else if (obj.match(/5(02|1[1-3])/)) return 'icon-wumai';
+    else if (obj.match(/504/)) return 'icon-fuchen';
+    else if (obj.match(/50[7-8]/)) return 'icon-shachenbao';
+    else return 'icon-unknown';
+}
+
+function getAirIcon (obj) {
+    var rate = parseInt(obj['air_now_city']['aqi'] / 50);
+    switch (rate) {
+        case 0 : return 'icon-laugh';
+        case 1 : return 'icon-weixiao';
+        case 2 : return 'icon-kaixin';
+        case 3 : return 'icon-face';
+        case 4 : return 'icon-unhappy';
+        case 5 : return 'icon-angry';
     }
 }

@@ -71,7 +71,8 @@
 #today_detailview .cont_title{
     font-size: 20px;
     font-weight: bold;
-    padding-left: 12px;
+    padding-left: 18px;
+    position: relative;
 }
 
 #today_detailview .detail {
@@ -84,6 +85,12 @@
 #today_detailview table {
     width: 240px;
     line-height: 20px;
+}
+
+#today_detailview .cont_title i.iconfont {
+    position: absolute;
+    top: 5px;
+    left: -6px;
 }
 
 /* ------------------collection----------------- */
