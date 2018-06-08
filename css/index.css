@@ -3,6 +3,7 @@
 /* 全局样式 */
 body {
     background: #f0fff3;
+    overflow-x: hidden;
 }
 
 /* 顶部样式 */

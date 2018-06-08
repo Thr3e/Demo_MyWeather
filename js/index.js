@@ -26,12 +26,7 @@ $(function () {
     // });
     }).first().trigger('click');
 
-    $('.topright_btn').children().click(function() {
-        $('#login_page').css('left', '0');
-        setLogPage();
-        $('.log_btn').click(logFunc);
-        $('.reg_btn').click(regFunc);
-    });
+    $('.topright_btn').children().click(loadLoginPage);
 
     $('.topleft_btn').children().click(loadSearchPage);
 });
