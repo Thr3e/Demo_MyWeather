@@ -223,6 +223,10 @@ body {
     margin-bottom: 10px;
 }
 
+#search_page .choose {
+    display: none;
+}
+
 #search_page .city_btn {
     border: 1px solid #59606d;
     margin: 3px 5px;
@@ -235,7 +239,25 @@ body {
     background: #59606d;
 }
 
+/* 错误页样式 */
+#error_page {
+    display: none;
+    text-align: center;
+    color: #c00;
+    background: #c6f1e7;
+    padding: 20px 0;
+    position: absolute;
+    width: 100%;
+    top: -33%;
+    left: 0;
+    z-index: 8;
+}
 
+#error_page img {
+    display: block;
+    width: 120px;
+    margin: 0 auto;
+}
 
 
 /* 主要内容样式 */

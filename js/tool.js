@@ -1,4 +1,6 @@
+//TODO:调整icon
 //----------BOOL----------
+
 /**
  * @description 判断当前是否是晚上（20点至次日6点）
  * @returns Boolean true:是晚上
@@ -7,7 +9,9 @@ function isNowNight () {
     var d = new Date().toLocaleTimeString();
     return (d.match(/下午/) && parseInt(d.slice(2)) > 7) || (d.match(/上午/) && (parseInt(d.slice(2)) < 7) || parseInt(d.slice(2)) === 12);
 }
+
 //----------LOAD----------
+
 /**
  * @description 加载today页面
  */
@@ -31,30 +35,24 @@ function loadMainView () {
         curIndex = 0;
     
     var curHtml = [{
-        'icon' : getWeatherImgUrl(xmlData['weather']['daily_forecast'][0]),
-        'time' : "今天·周" + "日一二三四五六".charAt(d.getDay()),
-        'weather' : todayInfo['tmp_min'] + '-' + todayInfo['tmp_max'] + '℃',
-        'text' : isNowNight() ? todayInfo['cond_txt_n'] : todayInfo['cond_txt_d']
+        '.weather_img' : `<img src="${getWeatherImgUrl(xmlData['weather']['daily_forecast'][0])}" alt="">`,
+        '.time_info' : "今天·周" + "日一二三四五六".charAt(d.getDay()),
+        '.degree_info' : todayInfo['tmp_min'] + '-' + todayInfo['tmp_max'] + '℃',
+        '.weather_info' : isNowNight() ? todayInfo['cond_txt_n'] : todayInfo['cond_txt_d']
     },{
-        'icon' : getWeatherImgUrl(xmlData['weather']['now']),
-        'time' : "现在·" + getFullLocalHour(d.toLocaleTimeString()),
-        'weather' : nowInfo['tmp'] + '℃',
-        'text' : nowInfo['cond_txt']
+        '.weather_img' : `<img src="${getWeatherImgUrl(xmlData['weather']['now'])}" alt="">`,
+        '.time_info' : "现在·" + getFullLocalHour(d.toLocaleTimeString()),
+        '.degree_info' : nowInfo['tmp'] + '℃',
+        '.weather_info' : nowInfo['cond_txt']
     }];
-    
-    $('.weather_img').html(`<img src="${curHtml[curIndex]['icon']}" alt="">`);
-    $('.time_info').text(curHtml[curIndex]['time']);
-    $('.degree_info').text(curHtml[curIndex]['weather']);
-    $('.weather_info').text(curHtml[curIndex]['text']);
-    $('.quality_info').text(`${aqiNowInfo.aqi}&nbsp空气质量${aqiNowInfo.qlty}`);
-    $('.quality_info').css({'background': `${colorArr[parseInt(aqiNowInfo.aqi / 50)]}`});
-    var t = setInterval(function(){
+
+    $.each(curHtml[curIndex], function(key, val){ $(key).html(val); });
+    $('.quality_info').text(`${aqiNowInfo.aqi} 空气质量${aqiNowInfo.qlty}`).css({'background': `${colorArr[parseInt(aqiNowInfo.aqi / 50)]}`});
+    if (weatherFlashInterval) clearInterval(weatherFlashInterval);
+    weatherFlashInterval = setInterval(function(){
         if (curIndex === 0) curIndex = 1;
         else curIndex = 0;
-        $('.weather_img').html(`<img src="${curHtml[curIndex]['icon']}" alt="">`);
-        $('.time_info').text(curHtml[curIndex]['time']);
-        $('.degree_info').text(curHtml[curIndex]['weather']);
-        $('.weather_info').text(curHtml[curIndex]['text']);
+        $.each(curHtml[curIndex], function(key, val){ $(key).html(val); });
     },4000);
 }
 
@@ -66,7 +64,7 @@ function loadDetailView () {
         weatherData = xmlData['weather'],
         airData = xmlData['air/now'];
 
-    htmlStr +=   setHtmlString (weatherData['update']['loc'].slice(11),
+    htmlStr =   setHtmlString (weatherData['update']['loc'].slice(11),
                                 `${getWeatherIcon(weatherData['now']['cond_code'])}`,
                                 `${weatherData['now']['cond_txt']}&nbsp${weatherData['now']['tmp']}℃`,
                                 `<table><tr>
@@ -160,61 +158,50 @@ function loadDetailView () {
  * @description 加载登录页面
  */
 function loadLoginPage(){
-    $.ajax({
-        url : './pages/log-reg.html',
-        type : 'GET',
-        success : function (response){
+    getLocalPage('./pages/log-reg.html',function (response){
             $('#login_page').html(response).css('left', '0');
             setLogPage();
             $('.log_btn').click(setLogFunc);
             $('.reg_btn').click(setRegFunc);
-        }
-    })
+        });
 }
 
 /**
  * @description 加载搜索页面
  */
 function loadSearchPage () {
-    $.ajax({
-        url : './pages/search.html',
-        type : 'GET',
-        success : function (response){ 
+    var tmpStr = '',
+        hotCity = ['长沙','香港','丽江','北京','深圳','武汉','成都','杭州','澳门','苏州'];
+    $.each(hotCity, function(idx, val){
+        tmpStr += searchCityInfo(val)[0];
+        if (idx !== hotCity.length - 1) { tmpStr += '|'};
+    });
+    hotCity = tmpStr.split('|');
+    getLocalPage('./pages/search.html', function (response){ 
             $('#search_page').html(response).css('left','0'); 
             $('.search_back_icon').click(function(){
                 $('#search_page').css('left', '-70%');
-                setTimeout(function(){$('#search_page').html(null)},500);
             });
-        }
-    });
-    // var curCity = [],
-    //     chooseCity = [],
-    //     hotCity = ['重庆','香港','上海','北京','深圳','武汉','成都','杭州','澳门','苏州'];
-    // getLocationData ('location/ip', function (response) {
-    //     curCity.push(response['address'].split('|')[2]); 
-    //     setCityBtn(curCity, '.locate .btn_wrap');
-    // });
-    // City_Info.forEach(function(val, idx, arr){
-    //     chooseCity.push(val['province'].slice(0,val['province'].indexOf(',')));
-    // })
-    // setCityBtn(chooseCity, '.choose .btn_wrap');
-    // setCityBtn(hotCity, '.hot .btn_wrap');
-    // $('.locate .city_btn, .hot .city_btn').click(function(){
-    //     // $('#search_page').css('left', '-70%');
-    //     console.log(2);
-    // })
-    // $('.hot .city_btn').click(function(){
-    //     // $('#search_page').css('left', '-70%');
-    //     console.log(1);
-    // });
+            $('.search_ipt').bind('input propertychange', function(){
+                $('.choose').css('display', 'block');
+                var searchCity = searchCityInfo($(this).val());
+                if (searchCity && searchCity !== []){
+                    setCityBtn(searchCity, '.choose .btn_wrap');
+                }
+            });
+            setCityBtn([xmlData['locData'].join()], '.locate .btn_wrap');
+            setCityBtn(hotCity, '.hot .btn_wrap');
+        })
 }
+
 //----------SET-----------
+
 /**
  * @description 获取地址、天气、空气质量信息并赋值给xmlData
- * @param {*} location 需要查询的地址，忽略则取用当前IP所在地址
+ * @param {string} location 需要查询的地址，忽略则取用当前IP所在地址
  */
 function setXmlData (location){
-    jQuery.each(xmlData,function(key, val){ xmlData[key] = null; });
+    $.each(xmlData,function(key, val){ if(key !== 'locData')xmlData[key] = null; });
     if (location) xmlData['location/ip'] = location; 
     else getLocationData('location/ip');
 
@@ -231,10 +218,10 @@ function setXmlData (location){
 /**
  * 
  * @description 拼接detailview板块的各个子版块信息
- * @param {*} title  子版块主标题
- * @param {*} attr   子版块副标题的icon图表类名
- * @param {*} content 子版块副标题
- * @param {*} detail 子版块主要内容
+ * @param {string} title  子版块主标题
+ * @param {string} attr   子版块副标题的icon图表类名
+ * @param {string} content 子版块副标题
+ * @param {string} detail 子版块主要内容
  */
 function setHtmlString(title, attr, content, detail) {
     return `
@@ -277,12 +264,9 @@ function setLogPage (){
 function setRegPage (){
     $('.login_wrap').css('height', '450px');
     $('.logo').css({'width':'50px', 'height':'50px', 'margin':'0 auto'});
-    $('.user_name').on('blur', function(){getUserInfoVerify($(this), /^\w{6,20}$/)});
-    $('.user_pwd').on('blur', function(){getUserInfoVerify($(this), /^[A-Z].{5,}$/)});
-    $('.conf_pwd').on('blur', function(){getUserInfoVerify($(this), $('.user_pwd').val())});
-    $('.user_email').on('blur', function(){getUserInfoVerify($(this), /^.?@\w+\.\w+$/)});
-    $('.user_tel').on('blur', function(){getUserInfoVerify($(this), /^1\d{10}$/)});
-    $('.verf_code').on('blur', function(){getUserInfoVerify($(this), $('.verif_text').text())});
+    $.each(reg_rule, function(idx, val) {
+        $(val.sel).on('blur', function(){getUserInfoVerify($(this), val.regx)})
+    ;})
     $('.log_btn').css('display', 'none');
     $('.reg_btn').css('display', 'block');
     $('.verif_text').text(getVerificationCode(4)).click(function(){
@@ -299,9 +283,15 @@ function setRegPage (){
 function setCityBtn(arr, sel) {
     var htmlStr = '';
     arr.forEach(function(val, idx, arr) {
-        htmlStr += `<div class="city_btn">${val}</div>`;
+        htmlStr += `<div class="city_btn" data-locInfo=${val}>${val.slice(val.lastIndexOf(',') + 1)}</div>`;
     })
     $(sel).html(htmlStr);
+    setTimeout(function() {
+        $('.city_btn').click(function() {
+            todayFuncs($(this).attr('data-locInfo').split(','));
+            $('.search_back_icon').click();
+        })
+    }, 200);
 }
 
 /**
@@ -312,12 +302,12 @@ function setTipsClear (){
     $('.wrong_tag').css('right', '50px');
 }
 
+//TODO:
 /**
  * @description 注册按钮功能逻辑
  */
 function setRegFunc (){
     $('.user_ipt').trigger('blur');
-    $('.topleft_btn').children().attr({ class : 'iconfont icon-zhuce' })
 }
 
 /**
@@ -325,9 +315,22 @@ function setRegFunc (){
  */
 function setLogFunc (){
     console.log(1);
-    // TODO:
 }
+
 //----------GET-----------
+/**
+ * @description 获取动态页面信息
+ * @param {string} url 页面地址
+ * @param {Function} success 回调函数
+ */
+function getLocalPage (url, success) {
+    $.ajax({
+        url : url,
+        type : 'GET',
+        success : success
+    })
+}
+
 /**
  * @description 调用百度地图api获取当前地址，并赋值给xmlDdta对象
  * @param {*} url api接口
@@ -341,7 +344,12 @@ function getLocationData (url){
             'coor' : 'gcj02'
         },
         dataType:'jsonp',
-        success:function(response){ xmlData[url] = response['address'].split('|'); }
+        success:function(response){ 
+            var tmpArr = response['address'].split('|');
+            tmpArr.splice(3);
+            xmlData[url] = tmpArr;
+            xmlData['locData'] = tmpArr; 
+        }
     })
 }
 
@@ -358,7 +366,9 @@ function getWeatherData (url, location){
             'location' : location
         },
         dataType:'json',
-        success:function(response){ xmlData[url] = response['HeWeather6']['0']; }
+        success:function(response){ 
+            xmlData[url] = response['HeWeather6']['0']; 
+        }
     })
 }
 
@@ -387,6 +397,13 @@ function getFullLocalHour (time) {
  * @param {RegExp} regx 正则表达式
  */
 function getUserInfoVerify(el, regx){
+    if (typeof(regx) === 'string'){
+        if (regx.match(/text/)){
+            regx = new RegExp(eval(regx), 'i');
+        }else {
+            regx = new RegExp(eval(regx));
+        }
+    } 
     if (el.val() && el.val().match(regx)){
         el.siblings('.tips').css('opacity', '0');
         el.siblings('.wrong_tag').css('right', '50px');
@@ -422,7 +439,7 @@ function getWeatherImgUrl (obj) {
 /**
  * @description 获取天气图标
  * @param {Object} obj 天气信息对象
- * @returns 天气图标类名
+ * @returns string 天气图标类名
  */
 function getWeatherIcon (obj){
     var iconName = 'icon-unknown'
@@ -435,10 +452,32 @@ function getWeatherIcon (obj){
 /**
  * @description 获取空气质量图标
  * @param {Object} obj 空气信息对象
- * @returns 空气图标类名
+ * @returns string 空气图标类名
  */
 function getAirIcon (obj) {
     var rate = parseInt(obj['air_now_city'].aqi / 50);
     var iconArr = ['icon-laugh','icon-weixiao','icon-kaixin','icon-face','icon-unhappy','icon-angry'];
     return iconArr[rate];
+}
+
+//----------Others----------
+/**
+ * @description 地址搜索
+ */
+function searchCityInfo(cityName){
+    if (!cityName) return;
+    var regx = new RegExp(cityName),
+        tmpStr = ',',
+        cityList = [];
+    $.each(City_Info, function(idx, val) {
+        var province = val.province.slice(0, val.province.indexOf(','));
+        $.each(val.citys, function(idx, item){
+            if ((province === cityName) && idx < 38){
+                cityList.push(`,${val.province.slice(0, item.indexOf(','))},${item.slice(0, item.indexOf(','))}`);
+            } else {
+                if (regx.test(item)) cityList.push(`,${province},${item.slice(0, item.indexOf(','))}`);
+            }
+        });
+    });
+    return cityList;
 }

@@ -1,3 +1,4 @@
+//中国城市信息
 var City_Info = [
     {
         'province' : "黑龙江,3113",
@@ -141,6 +142,7 @@ var City_Info = [
     }
 ];    
 
+//天气图标匹配规则
 var WeatherIconRullArr = [
     {
         'regx' : /100/,
@@ -220,17 +222,52 @@ var WeatherIconRullArr = [
     }
 ];
 
+//空气质量背景色数据
 var colorArr = ['#fc0', '#f80', '#f40', '#f00', '#b00', '#700'];
 
+//请求数据对象初始化
 var xmlData = {
     'location/ip' : null,
     'weather'      : null,
     'air/now'      : null 
 };
 
+//动态页面拼接地址
 var page_links = [
     {'link' : './pages/today.html', 'func' : 'todayFuncs'},
     {'link' : './pages/collection.html', 'func' : 'collectionFuncs'},
     {'link' : './pages/news.html', 'func' : 'newsFuncs'},
     {'link' : './pages/more.html', 'func' : 'moreFuncs'}
 ];
+
+//注册页面相关规则
+var reg_rule = [
+    {
+        'sel'  : '.user_name',
+        'regx' : /^\w{6,20}$/
+    },
+    {
+        'sel'  : '.user_pwd',
+        'regx' : /^[A-Z].{5,}$/
+    },
+    {
+        'sel'  : '.conf_pwd',
+        'regx' : `$('.user_pwd').val()`
+    },
+    {
+        'sel'  : '.user_email',
+        'regx' : /^.?@\w+\.\w+$/
+    },
+    {
+        'sel'  : '.user_tel',
+        'regx' : /^1[3|5|7|8|9]\d-?\d{4}-?\d{4}$/
+    },
+    {
+        'sel'  : '.verf_code',
+        'regx' : `$('.verif_text').text()`
+    },
+
+];
+
+//today页面定时器
+var weatherFlashInterval;
