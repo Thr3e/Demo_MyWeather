@@ -153,64 +153,68 @@ var WeatherIconRullArr = [
         'icon' : 'icon-duoyun'
     },
     {
-        'regx' : /104/,
+        'regx' : /104|2\d{2}/,
         'icon' : 'icon-yin'
-    },
-    {
-        'regx' : /20[0-4]/,
-        'icon' : 'icon-feng'
-    },
-    {
-        'regx' : /20[5-7]/,
-        'icon' : 'icon-dafeng'
-    },
-    {
-        'regx' : /2(08|09|1[0-3])/,
-        'icon' : 'icon-longjuanfeng'
     },
     {
         'regx' : /300/,
         'icon' : 'icon-zhenyu'
     },
     {
-        'regx' : /31[0-3]/,
+        'regx' : /31(0|6)/,
         'icon' : 'icon-baoyu'
     },
     {
-        'regx' : /30[2-4]/,
+        'regx' : /30[1-4]/,
         'icon' : 'icon-leizhenyu'
     },
     {
-        'regx' : /30(5|[8-9])/,
+        'regx' : /3(05|99)/,
         'icon' : 'icon-xiaoyu'
     },
     {
-        'regx' : /3(06|1[4-5])/,
+        'regx' : /3(06|14)/,
         'icon' : 'icon-zhongyu'
     },
     {
-        'regx' : /3(07|1[6-8]|99)/,
+        'regx' : /3(0(7|8)|15)/,
         'icon' : 'icon-dayu'
     },
     {
-        'regx' : /4(0[0-1]|99)/,
+        'regx' : /31(1|7)/,
+        'icon' : 'icon-dabaoyu'
+    },
+    {
+        'regx' : /31(2|8)/,
+        'icon' : 'icon-tedabaoyu'
+    },
+    {
+        'regx' : /4(0([0-1]|[8-9])|99)/,
         'icon' : 'icon-xiaoxue'
     },
     {
-        'regx' : /40[2-3]/,
+        'regx' : /40(2|9)/,
         'icon' : 'icon-daxue'
     },
     {
-        'regx' : /40[4-6]/,
-        'icon' : 'icon-yujiaxue'
+        'regx' : /4(0[3-5]|10)/,
+        'icon' : 'icon-baoxue'
     },
     {
-        'regx' : /5(0(0|1|9)|1(0|4|5))/,
+        'regx' : /40[6-7]/,
+        'icon' : 'icon-zhenxue'
+    },
+    {
+        'regx' : /5(0(0|1|9)|10)/,
         'icon' : 'icon-wu'
     },
     {
-        'regx' : /5(02|1[1-3])/,
-        'icon' : 'icon-wumai'
+        'regx' : /503/,
+        'icon' : 'icon-yangsha'
+    },
+    {
+        'regx' : /5(02|1[1-5])/,
+        'icon' : 'icon-mai'
     },
     {
         'regx' : /504/,
@@ -219,6 +223,14 @@ var WeatherIconRullArr = [
     {
         'regx' : /50[7-8]/,
         'icon' : 'icon-shachenbao'
+    },
+    {
+        'regx' : /507/,
+        'icon' : 'icon-shachenbao'
+    },
+    {
+        'regx' : /508/,
+        'icon' : 'icon-qiangshachenbao'
     }
 ];
 
@@ -271,3 +283,6 @@ var reg_rule = [
 
 //today页面定时器
 var weatherFlashInterval;
+
+//热门城市列表
+var hotCityList = ['长沙','香港','丽江','北京','深圳','武汉','成都','杭州','澳门','苏州'];

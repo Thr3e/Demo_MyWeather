@@ -1,201 +1,4 @@
-//TODO:调整icon
-//----------BOOL----------
-
-/**
- * @description 判断当前是否是晚上（20点至次日6点）
- * @returns Boolean true:是晚上
- */
-function isNowNight () {
-    var d = new Date().toLocaleTimeString();
-    return (d.match(/下午/) && parseInt(d.slice(2)) > 7) || (d.match(/上午/) && (parseInt(d.slice(2)) < 7) || parseInt(d.slice(2)) === 12);
-}
-
-//----------LOAD----------
-
-/**
- * @description 加载today页面
- */
-function loadTodayView (){
-    var todayInfo  = xmlData['weather']['daily_forecast'][0];
-    $('#title').find('.city').text(`${xmlData['location/ip'][2]}市`);   
-    $('#title').find('.province').text(`${xmlData['location/ip'][1]}省`);
-    $('.today-weather').text(`${todayInfo['tmp_min']}-${todayInfo['tmp_max']}℃`);
-    loadMainView();
-    loadDetailView();
-}
-
-/**
- * @description 加载today页面中的mainView
- */
-function loadMainView () {
-    var d = new Date(),
-        todayInfo = xmlData['weather']['daily_forecast'][0],
-        nowInfo = xmlData['weather']['now'],
-        aqiNowInfo = xmlData['air/now']['air_now_city'],
-        curIndex = 0;
-    
-    var curHtml = [{
-        '.weather_img' : `<img src="${getWeatherImgUrl(xmlData['weather']['daily_forecast'][0])}" alt="">`,
-        '.time_info' : "今天·周" + "日一二三四五六".charAt(d.getDay()),
-        '.degree_info' : todayInfo['tmp_min'] + '-' + todayInfo['tmp_max'] + '℃',
-        '.weather_info' : isNowNight() ? todayInfo['cond_txt_n'] : todayInfo['cond_txt_d']
-    },{
-        '.weather_img' : `<img src="${getWeatherImgUrl(xmlData['weather']['now'])}" alt="">`,
-        '.time_info' : "现在·" + getFullLocalHour(d.toLocaleTimeString()),
-        '.degree_info' : nowInfo['tmp'] + '℃',
-        '.weather_info' : nowInfo['cond_txt']
-    }];
-
-    $.each(curHtml[curIndex], function(key, val){ $(key).html(val); });
-    $('.quality_info').text(`${aqiNowInfo.aqi} 空气质量${aqiNowInfo.qlty}`).css({'background': `${colorArr[parseInt(aqiNowInfo.aqi / 50)]}`});
-    if (weatherFlashInterval) clearInterval(weatherFlashInterval);
-    weatherFlashInterval = setInterval(function(){
-        if (curIndex === 0) curIndex = 1;
-        else curIndex = 0;
-        $.each(curHtml[curIndex], function(key, val){ $(key).html(val); });
-    },4000);
-}
-
-/**
- * @description 加载today页面中的detailview
- */
-function loadDetailView () {
-    var htmlStr = $('#today_detailview').html(),
-        weatherData = xmlData['weather'],
-        airData = xmlData['air/now'];
-
-    htmlStr =   setHtmlString (weatherData['update']['loc'].slice(11),
-                                `${getWeatherIcon(weatherData['now']['cond_code'])}`,
-                                `${weatherData['now']['cond_txt']}&nbsp${weatherData['now']['tmp']}℃`,
-                                `<table><tr>
-                                    <td>
-                                        降雨量&nbsp${weatherData['now']['pcpn']}
-                                    </td>
-                                    <td>
-                                        湿度&nbsp${weatherData['now']['hum']}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        ${weatherData['now']['wind_dir']}&nbsp${weatherData['now']['wind_sc']}级
-                                    </td>
-                                    <td>
-                                        体感温度&nbsp${weatherData['now']['fl']}
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td>
-                                        能见度&nbsp${weatherData['now']['vis']}
-                                    </td>
-                                    <td>
-                                        夜间天气&nbsp${weatherData['daily_forecast'][2]['cond_txt_n']}
-                                    </td>
-                                </tr></table>`
-                                );
-    htmlStr +=  setHtmlString  ("",
-                                `${getAirIcon(airData)}`,
-                                `空气指数:&nbsp${airData['air_now_city']['aqi']}&nbsp${airData['air_now_city']['qlty']}`,
-                                `<table><tr>
-                                    <td>PM2.5&nbsp${airData['air_now_city']['pm25']}</td>
-                                    <td>PM10&nbsp${airData['air_now_city']['pm10']}</td>
-                                    <td>SO2&nbsp${airData['air_now_city']['so2']}</td>
-                                </tr>
-                                <tr>
-                                    <td>NO2&nbsp${airData['air_now_city']['no2']}</td>
-                                    <td>CO&nbsp${airData['air_now_city']['co']}</td>
-                                    <td>O3&nbsp${airData['air_now_city']['o3']}</td>
-                                </tr></table>`
-                                );                            
-    htmlStr +=  setHtmlString  ("",
-                                'icon-aixin',
-                                `生活指数`,
-                                `<table><tr>
-                                    <td>舒适度&nbsp${weatherData['lifestyle'][0]['brf']}</td>
-                                    <td>穿衣&nbsp${weatherData['lifestyle'][1]['brf']}</td>
-                                </tr>
-                                <tr>
-                                    <td>紫外线&nbsp${weatherData['lifestyle'][5]['brf']}</td>
-                                    <td>感冒&nbsp${weatherData['lifestyle'][2]['brf']}</td>
-                                </tr>
-                                <tr>
-                                    <td>运动&nbsp${weatherData['lifestyle'][3]['brf']}</td>
-                                    <td>交通&nbsp${weatherData['lifestyle'][4]['brf']}</td>
-                                </tr></table>`
-                                );
-    htmlStr +=  setHtmlString  ("",
-                                'icon-hangche',
-                                `今日限行尾号:&nbsp${getLimitNum(new Date().getDay())}`,
-                                `明日现行尾号:&nbsp${getLimitNum(new Date().getDay() + 1)}`
-                                );
-    htmlStr += setHtmlString   ('明天',
-                                `${getWeatherIcon(weatherData['daily_forecast'][1]['cond_code_d'])}`,
-                                `${weatherData['daily_forecast'][1]['cond_txt_d']}&nbsp${weatherData['daily_forecast'][1]['tmp_min'] + '-' + weatherData['daily_forecast'][1]['tmp_max'] + '℃'}`,
-                                `<table><tr>
-                                    <td>夜间天气&nbsp${weatherData['daily_forecast'][1]['cond_txt_n']}</td>
-                                    <td>${weatherData['daily_forecast'][1]['wind_dir']}&nbsp${weatherData['daily_forecast'][1]['wind_sc']}级</td>
-                                </tr>
-                                <tr>
-                                    <td>降水概率&nbsp${weatherData['daily_forecast'][1]['pop']}</td>
-                                    <td>湿度&nbsp${weatherData['daily_forecast'][1]['hum']}</td>
-                                </tr></table>`
-                                );
-    htmlStr += setHtmlString   ('后天',
-                                `${getWeatherIcon(weatherData['daily_forecast'][2]['cond_code_d'])}`,
-                                `${weatherData['daily_forecast'][2]['cond_txt_d']}&nbsp${weatherData['daily_forecast'][2]['tmp_min'] + '-' + weatherData['daily_forecast'][2]['tmp_max'] + '℃'}`,
-                                `<table><tr>
-                                    <td>夜间天气&nbsp${weatherData['daily_forecast'][2]['cond_txt_n']}</td>
-                                    <td>${weatherData['daily_forecast'][2]['wind_dir']}&nbsp${weatherData['daily_forecast'][2]['wind_sc']}级</td>
-                                </tr>
-                                <tr>
-                                    <td>降水概率&nbsp${weatherData['daily_forecast'][2]['pop']}</td>
-                                    <td>湿度&nbsp${weatherData['daily_forecast'][2]['hum']}</td>
-                                </tr></table>`
-                                );
-    $('#today_detailview').html(htmlStr);
-}
-
-/**
- * @description 加载登录页面
- */
-function loadLoginPage(){
-    getLocalPage('./pages/log-reg.html',function (response){
-            $('#login_page').html(response).css('left', '0');
-            setLogPage();
-            $('.log_btn').click(setLogFunc);
-            $('.reg_btn').click(setRegFunc);
-        });
-}
-
-/**
- * @description 加载搜索页面
- */
-function loadSearchPage () {
-    var tmpStr = '',
-        hotCity = ['长沙','香港','丽江','北京','深圳','武汉','成都','杭州','澳门','苏州'];
-    $.each(hotCity, function(idx, val){
-        tmpStr += searchCityInfo(val)[0];
-        if (idx !== hotCity.length - 1) { tmpStr += '|'};
-    });
-    hotCity = tmpStr.split('|');
-    getLocalPage('./pages/search.html', function (response){ 
-            $('#search_page').html(response).css('left','0'); 
-            $('.search_back_icon').click(function(){
-                $('#search_page').css('left', '-70%');
-            });
-            $('.search_ipt').bind('input propertychange', function(){
-                $('.choose').css('display', 'block');
-                var searchCity = searchCityInfo($(this).val());
-                if (searchCity && searchCity !== []){
-                    setCityBtn(searchCity, '.choose .btn_wrap');
-                }
-            });
-            setCityBtn([xmlData['locData'].join()], '.locate .btn_wrap');
-            setCityBtn(hotCity, '.hot .btn_wrap');
-        })
-}
-
 //----------SET-----------
-
 /**
  * @description 获取地址、天气、空气质量信息并赋值给xmlData
  * @param {string} location 需要查询的地址，忽略则取用当前IP所在地址
@@ -302,7 +105,7 @@ function setTipsClear (){
     $('.wrong_tag').css('right', '50px');
 }
 
-//TODO:
+//TODO:完成注册登录功能
 /**
  * @description 注册按钮功能逻辑
  */
@@ -392,6 +195,15 @@ function getFullLocalHour (time) {
 }
 
 /**
+ * @description 获取中文星期数
+ * @param {Number} day 数字星期数
+ * @returns {String} 中文星期数
+ */
+function getCNWeakday (day) {
+    return "周" + "日一二三四五六".charAt(day % 7);
+}
+
+/**
  * @description 监测用户输入信息是否合法
  * @param {Document} el input输入框对象
  * @param {RegExp} regx 正则表达式
@@ -438,20 +250,27 @@ function getWeatherImgUrl (obj) {
 
 /**
  * @description 获取天气图标
- * @param {Object} obj 天气信息对象
+ * @param {Number} condCode 查询日期距今天的间隔,忽略为实时天气代码
  * @returns string 天气图标类名
  */
-function getWeatherIcon (obj){
-    var iconName = 'icon-unknown'
+function getWeatherIcon (idx){
+    var iconName = 'icon-unknown',
+        condCode = 0;
+    if (!idx) {
+        condCode = xmlData['weather']['now']['cond_code'];
+    }
+    else {
+        condCode = isNowNight() ? xmlData['weather']['daily_forecast'][idx]['cond_code_n'] : xmlData['weather']['daily_forecast'][idx]['cond_code_d'];
+    }
     WeatherIconRullArr.forEach(function(val, idx, arr){
-        if (obj.match(val['regx'])) iconName = val.icon;
+        if (condCode.match(val['regx'])) iconName = val.icon;
     });
     return iconName;
 }
 
 /**
  * @description 获取空气质量图标
- * @param {Object} obj 空气信息对象
+ * @param {object} obj 空气信息对象
  * @returns string 空气图标类名
  */
 function getAirIcon (obj) {
@@ -461,6 +280,15 @@ function getAirIcon (obj) {
 }
 
 //----------Others----------
+/**
+ * @description 判断当前是否是晚上（20点至次日6点）
+ * @returns Boolean true:是晚上
+ */
+function isNowNight () {
+    var d = new Date().toLocaleTimeString();
+    return (d.match(/下午/) && parseInt(d.slice(2)) > 7) || (d.match(/上午/) && (parseInt(d.slice(2)) < 7) || parseInt(d.slice(2)) === 12);
+}
+
 /**
  * @description 地址搜索
  */
@@ -480,4 +308,39 @@ function searchCityInfo(cityName){
         });
     });
     return cityList;
+}
+
+
+/**
+ * @description 为元素设置页面内横向滑动动画
+ * @param {string} sel 元素选择器
+ */
+function xScrollAnimate (sel) {
+    //初始化变量
+    var deltaX=0,//每次移动的变化量
+        prevX,//上一次移动完手指坐标信息
+        maxX = 0,//右划边界
+        minX = parseInt($('body').css('width')) - parseInt($(sel).css('width'));//左滑边界
+
+    $(sel).on("touchstart",function(e){
+        var touch = e.originalEvent.touches[0];
+        //初始化坐标信息
+        prevX = touch.pageX;
+    });
+    $(sel).on('touchmove',function(e){
+        e.preventDefault();
+        var touch = e.originalEvent.touches[0];
+        //计算偏移量
+        deltaX = touch.pageX - prevX + parseInt($(this).css('left'));
+        //记录本次坐标信息
+        prevX = touch.pageX;
+        //位移
+        $(this).css('left', `${deltaX}px`);
+    })
+    $(sel).on('touchend',function(e){
+        e.preventDefault();
+        //判断位移是否超出边界
+        if (parseInt($(this).css('left')) > maxX) $(this).css('left', `${maxX}px`);
+        if (parseInt($(this).css('left')) < minX) $(this).css('left', `${minX}px`);
+    })
 }

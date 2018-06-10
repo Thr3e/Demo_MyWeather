@@ -1,4 +1,4 @@
-@charset 'UTF-8';
+@charset "UTF-8";
 
 /* --------------------today-------------------- */
 #today_mainview {
@@ -35,13 +35,6 @@
     padding: 1px 5px;
     border-radius: 2px;
     color: #fff;
-}
-
-#today_mainview .weather_week {
-    height: 200px;
-    background: #eee;
-    margin: 20px auto;
-    box-shadow: 0 3px 5px 0 #999;
 }
 
 #today_detailview {
@@ -91,6 +84,313 @@
     position: absolute;
     top: 5px;
     left: -6px;
+}
+
+/* -------------------log-reg------------------- */
+#login_page {
+    width: 100%;
+    height: 100%;
+    text-align: center;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 100%;
+    z-index: 2;
+    transition: left .35s ease-out;
+    background: #f0fff3;
+}
+
+#login_page .login_head {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    color: #59606d;
+    background: linear-gradient(to bottom, #c6f1e7, #f0fff3);
+}
+
+#login_page .login_head i {
+    display: block;
+}
+
+#login_page .logo {
+    width: 256px;
+    height: 256px;
+    background: #999;
+    margin: 72px auto;
+    border-radius: 50%;
+    transition: all .25s linear;
+}
+
+#login_page .login_wrap {
+    height: 100px;
+    overflow: hidden;
+    transition: all .25s linear;
+}
+
+#login_page .login_wrap input{
+    display: block;
+    width: 300px;
+    height: 30px;
+    margin: 20px auto;
+    font-size: 20px;
+    line-height: 30px;
+    letter-spacing: 1px;
+    color: #59606d;
+    background: #c6f1e7;
+    border-radius: 5px;
+    padding-left: 15px;
+    position: relative;
+    z-index: 3;
+}
+
+#login_page form > div {
+    position: relative;
+}
+
+#login_page form .iconfont::after{
+    display: block;
+    width: 0;
+    height: 0;
+    border-bottom: 8px solid #b00;
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    content: '';
+    position: absolute;
+    top: 8px;
+    right: 8px;
+}
+
+#login_page form .wrong_tag {
+    width: 16px;
+    height: 16px;
+    background: #b00;
+    position: absolute;
+    top: 4px;
+    right: 50px;
+    font-size: 0.5rem;
+    color: #fff;
+    transition: all .2s linear;
+}
+
+#login_page .login_wrap .verf_code {
+    width: 160px;
+    display: inline-block;
+    vertical-align: top;
+    margin: 0 0 0 13px;
+}
+
+#login_page .verif_text {
+    display: inline-block;
+    width: 120px;
+    height: 30px;
+    color: #fff;
+    font-size: 16px;
+    letter-spacing: 5px;
+    line-height: 30px;
+    text-align: center;
+    background: linear-gradient(to bottom right,rgba(238,162,229,0.84),cornflowerblue);
+    cursor: pointer;
+    font-style: italic;
+}
+
+#login_page .user_ipt::-webkit-input-placeholder{
+    font-size: .5rem;
+    line-height: 30px;
+}
+
+#login_page .tips{
+    opacity: 0;
+    position: absolute;
+    top: 6px;
+    right: 42px;
+    z-index: 5;
+    font-size: .5rem;
+    border: 1px solid rgb(160, 0, 0);
+    color: rgb(160, 0, 0);
+    border-radius: 5px;
+    transition: all .2s linear
+}
+
+#login_page .log_btn,
+#login_page .reg_btn {
+    background: #70acb1;
+    font-weight: bold;
+    font-size: 26px;
+    white-space: pre;
+    height: 40px;
+    line-height: 40px;
+    width: 280px;
+    margin: 15px auto 0;
+    border-radius: 8px;
+    color: #f0fff3;
+}
+
+
+/* -------------------search-------------------- */
+#search_page {
+    background: #70acb1;
+    width: 70%;
+    height: 100%;
+    position: absolute;
+    z-index: 10;
+    top: 0;
+    left: -70%;
+    color: #f0fff3;
+    transition: all .25s linear;
+}
+
+#search_page .head i {
+    display: block;
+    margin: 10px;
+}
+
+#search_page input {
+    width: calc(100% - 20px);
+    height: 30px;
+    margin: 20px 10px;
+    display: block;
+    background: #f0fff3;
+    color: #59606d;
+    padding-left: 5px;
+    border: 1px solid #59606d;
+    border-radius: 5px;
+}
+
+#search_page .city_wrap {
+    margin: 20px 10px;
+}
+
+#search_page .locate .title {
+    line-height: 30px;
+    margin-right: 10px;
+    margin-bottom: 0;
+}
+
+#search_page .title {
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+#search_page .choose {
+    display: none;
+}
+
+#search_page .city_btn {
+    border: 1px solid #59606d;
+    margin: 3px 5px;
+    display: inline-block;
+    padding: 2px 5px;
+    border-radius: 10px;
+    line-height: 20px;
+    font-size: .5rem;
+    letter-spacing: 3px;
+    background: #59606d;
+}
+
+
+/* --------------------error-------------------- */
+#error_page {
+    display: none;
+    text-align: center;
+    color: #c00;
+    background: #c6f1e7;
+    padding: 20px 0;
+    position: absolute;
+    width: 100%;
+    top: -33%;
+    left: 0;
+    z-index: 8;
+}
+
+#error_page img {
+    display: block;
+    width: 120px;
+    margin: 0 auto;
+}
+
+
+/* -----------------weak-weather---------------- */
+#today_weakWeatherView {
+    width: 100%;
+    height: 300px;
+    overflow: hidden;
+    position: relative;
+    margin-bottom: 40px;
+    box-shadow: 0px 10px 10px 0 #aaa;
+}
+
+#today_weakWeatherView .weak_weather_content{    
+    text-align: center;
+    margin: 30px auto;
+    background: #c6f1e7;
+    padding: 5px 0;
+    color: #59606d;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+#today_weakWeatherView .line_wrap {
+    width: 500px;
+    display: flex;
+    justify-content: space-between;
+    align-items: start;
+}
+
+#today_weakWeatherView .rank_wrap {
+    margin: 0 10px;
+}
+
+#today_weakWeatherView .weakday {
+    letter-spacing: 2px;
+    line-height: 5px;
+    padding-top: 13px;
+}
+
+#today_weakWeatherView .date {
+    font-size: .8rem;
+    color: #999999;
+    line-height: 18px;
+}
+
+#today_weakWeatherView .iconfont {
+    font-size: 2rem;
+}
+
+#today_weakWeatherView .high_tmp,
+#today_weakWeatherView .low_tmp {
+    padding: 3px 0;
+    line-height: 20px;
+    font-size: .9rem;
+}
+
+#today_weakWeatherView .weather_canvas{
+    width: 500px;
+    height: 130px;
+}    
+
+#today_weakWeatherView .line_chart_wrap {
+    transform: translateY(-142px);
+}
+
+#today_weakWeatherView .idots {
+    height: 100px;
+    width: 36px;
+    position: relative;
+}
+
+#today_weakWeatherView .high_idot,
+#today_weakWeatherView .low_idot {
+    width: 8px;
+    height: 8px;
+    background: #59606d;
+    display: block;
+    position: absolute;
+    left: 50%;
+    bottom: 20%;
+    transform: translate(-50%,50%);
+    border-radius: 50%;
+    border: 1px solid lightyellow;
 }
 
 /* ------------------collection----------------- */
