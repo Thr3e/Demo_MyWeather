@@ -55,10 +55,11 @@ function setLogPage (){
     $('.log_btn').css('display', 'block');
     $('.reg_btn').css('display', 'none');
     $('.tr_btn').children().click(setRegPage);
-    $('.tl_btn').children().click(function() {
-        $('#login_page').css('left', '100%');
-        setTimeout(function(){$('#login_page').html(null)}, 500);
-    });
+    $.each(reg_rule, function(idx, val) {
+        $(val.sel).on('blur', function(){
+            getUserInfoVerify($(this), val.regx);
+        })
+    ;})
 }
 
 /**
@@ -67,9 +68,6 @@ function setLogPage (){
 function setRegPage (){
     $('.login_wrap').css('height', '450px');
     $('.logo').css({'width':'50px', 'height':'50px', 'margin':'0 auto'});
-    $.each(reg_rule, function(idx, val) {
-        $(val.sel).on('blur', function(){getUserInfoVerify($(this), val.regx)})
-    ;})
     $('.log_btn').css('display', 'none');
     $('.reg_btn').css('display', 'block');
     $('.verif_text').text(getVerificationCode(4)).click(function(){
@@ -97,27 +95,87 @@ function setCityBtn(arr, sel) {
     }, 200);
 }
 
+//TODO:
 /**
  * @description 清除注册页面错误提示信息
  */
 function setTipsClear (){
-    $('.tips').css('opacity', '0');
-    $('.wrong_tag').css('right', '50px');
+    $('.tips').css('opacity', '0').attr('data-correct', '1');
+    $('.wrong_tag').css('right', '10px');
 }
 
-//TODO:完成注册登录功能
 /**
  * @description 注册按钮功能逻辑
  */
 function setRegFunc (){
     $('.user_ipt').trigger('blur');
+    var isFinish = true,
+        isNotRepet = true;
+    $.each($('.tips'), function(){ 
+        //判断每个输入框是否填有内容
+        isFinish = isFinish && parseInt($(this).attr('data-correct')); 
+    });
+    var userInfo = JSON.parse(localStorage.getItem('user_info')),
+        thisUser = {
+        'user_name' : $('.user_name').val(),
+        'user_pwd'  : $('.user_pwd').val(),
+        'user_email': $('.user_email').val(),
+        'user_tel'  : $('.user_tel').val()
+    };
+    if (!userInfo) userInfo = [];
+    $.each(userInfo, function(idx, val) {
+        isNotRepet = isNotRepet && (val.user_name !== thisUser.user_name);
+    })
+    //更新验证码
+    $('.verif_text').text(getVerificationCode(4));
+    //判断注册信息
+    if(isFinish && isNotRepet) {
+        userInfo.push(thisUser);
+        localStorage.setItem('user_info', JSON.stringify(userInfo));
+        thr3eTipTag('#login_page', `${userInfo.user_name},注册成功`);
+        setTimeout(function() { $('.tl_btn').children().click() }, 4000);
+    }else if(!isFinish){
+        thr3eTipTag('#login_page', '请输入完整的注册信息');
+    }else if(!isNotRepet) {
+        thr3eTipTag('#login_page', '该账号已被注册，请重新输入');
+        $.each($('.user_ipt'), function(idx, el){ $(this).val(''); })
+    }
+    
 }
 
 /**
  * @description 登录按钮功能逻辑
  */
 function setLogFunc (){
-    console.log(1);
+    $('.user_name, .user_pwd').blur();
+    var isFinish = true,
+        isNotRepet = true,
+        isCorrect = false;
+    $.each($('.tips'), function(){
+        isFinish = isFinish && parseInt($(this).attr('data-correct'));
+    });
+    var userInfo = JSON.parse(localStorage.getItem('user_info')),
+        thisUser = {
+        'user_name' : $('.user_name').val(),
+        'user_pwd'  : $('.user_pwd').val()
+    };
+    if (!userInfo) userInfo = [];
+
+    $.each(userInfo, function(idx, val) {
+        if ((thisUser.user_name === val.user_name) && (thisUser.user_pwd === val.user_pwd)) {
+            isCorrect = true;
+        }
+    })
+
+    if(isFinish && isCorrect) {
+        thr3eTipTag('#login_page', `${userInfo.user_name},欢迎回来`);
+        setTimeout(function() { $('.tl_btn').children().click() }, 5000);
+    }else if(!isFinish){
+        thr3eTipTag('#login_page', '请输入账号密码');
+    }else if(!isCorrect) {
+        thr3eTipTag('#login_page', '请输入正确的账号密码');
+        $.each($('.user_ipt'), function(idx, el){ $(this).val(''); })
+    }
 }
 
 //----------GET-----------
@@ -136,7 +194,7 @@ function getLocalPage (url, success) {
 
 /**
  * @description 调用百度地图api获取当前地址，并赋值给xmlDdta对象
- * @param {*} url api接口
+ * @param {string} url api接口
  */
 function getLocationData (url){
     $.ajax({
@@ -217,11 +275,11 @@ function getUserInfoVerify(el, regx){
         }
     } 
     if (el.val() && el.val().match(regx)){
-        el.siblings('.tips').css('opacity', '0');
-        el.siblings('.wrong_tag').css('right', '50px');
+        el.siblings('.tips').css('opacity', '0').attr('data-correct', '1');
+        el.siblings('.wrong_tag').css('right', '10px');
     } else {
-        el.siblings('.tips').css('opacity', '1');
-        el.siblings('.wrong_tag').css('right', '13px');
+        el.siblings('.tips').css('opacity', '1').attr('data-correct', '0');
+        el.siblings('.wrong_tag').css('right', '-25px');
     }
 }
 
@@ -343,4 +401,37 @@ function xScrollAnimate (sel) {
         if (parseInt($(this).css('left')) > maxX) $(this).css('left', `${maxX}px`);
         if (parseInt($(this).css('left')) < minX) $(this).css('left', `${minX}px`);
     })
+}
+
+function checkUserInfo(el,) {
+    el.blur();
+    var isFinish = true,
+        isNotRepet = true,
+        userInfo = JSON.parse(localStorage.getItem('user_info')),
+        thisUser = {};
+    $.each(el, function(){ 
+        //判断每个输入框是否填有内容
+        isFinish = isFinish && parseInt($(this).siblings('.tips').attr('data-correct')); 
+        console
+    });
+    
+
+    if (!userInfo) userInfo = [];
+    $.each(userInfo, function(idx, val) {
+        isNotRepet = isNotRepet && (val.user_name !== thisUser.user_name);
+    })
+    //更新验证码
+    $('.verif_text').text(getVerificationCode(4));
+    //判断注册信息
+    if(isFinish && isNotRepet) {
+        userInfo.push(thisUser);
+        localStorage.setItem('user_info', JSON.stringify(userInfo));
+        thr3eTipTag('#login_page', `${userInfo.user_name},注册成功`);
+        setTimeout(function() { $('.tl_btn').children().click() }, 4000);
+    }else if(!isFinish){
+        thr3eTipTag('#login_page', '请输入完整的注册信息');
+    }else if(!isNotRepet) {
+        thr3eTipTag('#login_page', '该账号已被注册，请重新输入');
+        $.each($('.user_ipt'), function(idx, el){ $(this).val(''); })
+    }
 }

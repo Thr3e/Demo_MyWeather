@@ -97,7 +97,6 @@ function loadMainView () {
 /**
  * @description 加载today页面中的一周天气简报模块
  */
-//TODO:
 function loadWeakWeatherView() {
     var nowDate = new Date(),
         time    = nowDate.getTime() / 1000 / 3600 / 24,
@@ -115,7 +114,7 @@ function loadWeakWeatherView() {
             var tmpDate = (new Date((time + idx) * 24 * 3600 * 1000)).toLocaleDateString().split('/');
             $(this).text(`${tmpDate[1]}·${tmpDate[2]}`);
         })
-        $.each($('.iconfont'), function(idx, val) {
+        $.each($('#today_weakWeatherView .iconfont'), function(idx, val) {
             var iconClass = getWeatherIcon(idx % 3);
             $(this).addClass(iconClass);
         })
@@ -251,6 +250,10 @@ function loadLoginPage(){
             setLogPage();
             $('.log_btn').click(setLogFunc);
             $('.reg_btn').click(setRegFunc);
+            $('.tl_btn').children().click(function() {
+                $('#login_page').css('left', '100%');
+                setTimeout(function(){$('#login_page').html(null)}, 500);
+            });
         });
 }
 
@@ -274,7 +277,7 @@ function loadSearchPage () {
                 $('.choose').css('display', 'block');
                 var searchCity = searchCityInfo($(this).val());
                 if (searchCity && searchCity !== []){
-                    setCityBtn(searchCity, '.choose .btn_wrap');
+                    setCityBtn(searchCity.slice(0, 37), '.choose .btn_wrap');
                 }
             });
             setCityBtn([xmlData['locData'].join()], '.locate .btn_wrap');

@@ -268,7 +268,7 @@ var reg_rule = [
     },
     {
         'sel'  : '.user_email',
-        'regx' : /^.?@\w+\.\w+$/
+        'regx' : /^.+@\w+\.\w+$/
     },
     {
         'sel'  : '.user_tel',

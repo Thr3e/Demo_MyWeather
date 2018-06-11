@@ -1,0 +1,19 @@
+@charset "UTF-8";
+
+/* 为js创建的元素添加样式 */
+
+#thr3e_tip_tag {
+    color: #f9f9f9;
+    background: #000000bb;
+    text-align: center;
+    display: inline-block;
+    line-height: 20px;
+    padding: 3px 10px;
+    border-radius: 5px;
+    letter-spacing: 2px;
+    position: fixed;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 100;
+    white-space: nowrap;
+}

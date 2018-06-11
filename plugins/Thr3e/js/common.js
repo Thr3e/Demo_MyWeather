@@ -89,3 +89,65 @@ function getVerificationCode(length) {
     }
     return resStr;
 }
+
+
+/**
+ * 
+ * @description  生成底部提示框
+ * @param {'string'} sel 调用提示框的元素选择器
+ * @param {'string'} msg 提示信息字符串
+ */
+function thr3eTipTag (sel, msg){
+    var isAnimate = false;
+        parentEl = document.querySelector(sel);
+    if (parentEl){
+        //控制tag标签同时只出现一个
+        parentEl.childNodes.forEach(function(val, idx, arr){
+            isAnimate =  (val.id === 'thr3e_tip_tag') || isAnimate;
+        });
+        if (isAnimate) return;
+        //获取父元素原本内容
+        parentHtml = parentEl.innerHTML;
+        //拼接增加tag标签
+        var newTag = document.createElement('div');
+        newTag.id = "thr3e_tip_tag";
+        newTag.style.bottom = "-30px";
+        newTag.textContent = msg;
+        parentEl.appendChild(newTag);
+        //帧动画
+        var tiptag   = document.querySelector('#thr3e_tip_tag'), 
+            offset   = (parseInt(parentEl.offsetHeight) - parseInt(tiptag.style.bottom)) * 0.1,//总距离
+            interval = 15,//帧时间
+            duration = 1000,//总时间
+            frames   = duration / interval,//帧数
+            speed    = Math.ceil(offset / frames),//帧速度
+            curTop   = parseInt(tiptag.style.bottom),//起始额位置
+            tarTop   = curTop + offset;//目标位置
+        //展示tag
+        var showT = setInterval(function(){
+            curTop   = parseInt(tiptag.style.bottom);
+            if (curTop < tarTop) {
+                tiptag.style.bottom = curTop + speed + 'px';
+            } else {
+                clearInterval(showT);
+                t= null;
+                tiptag.style.bottom = tarTop + 'px';
+            }
+        },interval);
+        //隐藏tag
+        setTimeout(function() {
+            var hideT = setInterval(function(){
+                curTop   = parseInt(tiptag.style.bottom);
+                tarTop = -30;
+                if (curTop > tarTop) {
+                    tiptag.style.bottom = curTop - speed + 'px';
+                } else {
+                    clearInterval(hideT);
+                    t= null;
+                    tiptag.style.bottom = tarTop + 'px';
+                    parentEl.removeChild(tiptag);
+                }
+            },interval);
+        }, 2400);
+    }
+}
