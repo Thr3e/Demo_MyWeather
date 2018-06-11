@@ -32,8 +32,16 @@ function todayFuncs(location){
 
 
 // ------------collection------------
-function collectionFuncs() {  
-    
+function collectionFuncs() { 
+    $('#header').css('background', '#c6f1e7');
+    $('#header #title i').css('display', 'none'); 
+    $('#header .city').text('我的');
+    $('#header .province').text('COLLECTION');
+    $('#header .icon-jia').attr('class', 'iconfont icon-bi');
+    loadWeakWeatherView('.col_weakday_info');
+    $('#weakday_wrap').append('<div class="col_weather_info"></div>');
+    loadWeakWeatherView('.col_weather_info');
+
 }
 
 
@@ -58,7 +66,7 @@ function loadTodayView (){
     $('#title').find('.province').text(`${xmlData['location/ip'][1]}省`);
     $('.today-weather').text(`${todayInfo['tmp_min']}-${todayInfo['tmp_max']}℃`);
     loadMainView();
-    loadWeakWeatherView();
+    loadWeakWeatherView('#today_weakWeatherView');
     loadDetailView();
 }
 
@@ -96,14 +104,15 @@ function loadMainView () {
 
 /**
  * @description 加载today页面中的一周天气简报模块
+ * @param {string} sel 展示模块的父级选择器
  */
-function loadWeakWeatherView() {
+function loadWeakWeatherView(sel) {
     var nowDate = new Date(),
         time    = nowDate.getTime() / 1000 / 3600 / 24,
         highArr = [],
         lowArr  = [];
     getLocalPage('./pages/weak-weather.html', function(response){
-        $('#today_weakWeatherView').html(response);
+        $(sel).html(response);
         //定义滑动动画
         xScrollAnimate('.weak_weather_content');
         $.each($('.weakday'), function(idx, val){
@@ -114,7 +123,7 @@ function loadWeakWeatherView() {
             var tmpDate = (new Date((time + idx) * 24 * 3600 * 1000)).toLocaleDateString().split('/');
             $(this).text(`${tmpDate[1]}·${tmpDate[2]}`);
         })
-        $.each($('#today_weakWeatherView .iconfont'), function(idx, val) {
+        $.each($(sel).find('.iconfont'), function(idx, val) {
             var iconClass = getWeatherIcon(idx % 3);
             $(this).addClass(iconClass);
         })
@@ -292,13 +301,15 @@ function loadSearchPage () {
  */
 function loadCanvas(sel, arr){
     //获得画布
-    var canvas  = document.querySelector(sel),
-        ctx = canvas.getContext("2d");//获得画笔
-    ctx.beginPath();
-    ctx.moveTo(0, arr[0][1] - 5);
-    arr.forEach(function(val, idx, arr){
-        ctx.lineTo(val[0], val[1]);
-    })
-    ctx.lineTo(300, arr[0][1] + 5);
-    ctx.stroke();
+    var canvas  = document.querySelector(sel);
+    if (canvas){
+        var ctx = canvas.getContext("2d");//获得画笔
+        ctx.beginPath();
+        ctx.moveTo(0, arr[0][1] - 5);
+        arr.forEach(function(val, idx, arr){
+            ctx.lineTo(val[0], val[1]);
+        })
+        ctx.lineTo(300, arr[0][1] + 5);
+        ctx.stroke();
+    }
 }

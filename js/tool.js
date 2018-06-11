@@ -10,8 +10,8 @@ function setXmlData (location){
 
     var t = setInterval(function(){
         if (xmlData['location/ip']) {
-            getWeatherData('air/now', xmlData['location/ip'][2]);
-            getWeatherData('weather', xmlData['location/ip'][2]);
+            getWeatherData('air/now', xmlData['location/ip'][2], xmlData);
+            getWeatherData('weather', xmlData['location/ip'][2], xmlData);
             clearInterval(t);
             t = null;
         }
@@ -100,7 +100,7 @@ function setCityBtn(arr, sel) {
  * @description 清除注册页面错误提示信息
  */
 function setTipsClear (){
-    $('.tips').css('opacity', '0').attr('data-correct', '1');
+    $('.tips').css('opacity', '0');
     $('.wrong_tag').css('right', '10px');
 }
 
@@ -108,35 +108,17 @@ function setTipsClear (){
  * @description 注册按钮功能逻辑
  */
 function setRegFunc (){
-    $('.user_ipt').trigger('blur');
-    var isFinish = true,
-        isNotRepet = true;
-    $.each($('.tips'), function(){ 
-        //判断每个输入框是否填有内容
-        isFinish = isFinish && parseInt($(this).attr('data-correct')); 
-    });
-    var userInfo = JSON.parse(localStorage.getItem('user_info')),
-        thisUser = {
-        'user_name' : $('.user_name').val(),
-        'user_pwd'  : $('.user_pwd').val(),
-        'user_email': $('.user_email').val(),
-        'user_tel'  : $('.user_tel').val()
-    };
-    if (!userInfo) userInfo = [];
-    $.each(userInfo, function(idx, val) {
-        isNotRepet = isNotRepet && (val.user_name !== thisUser.user_name);
-    })
+    var verifyObj = checkUserInfo('.user_ipt');
     //更新验证码
     $('.verif_text').text(getVerificationCode(4));
     //判断注册信息
-    if(isFinish && isNotRepet) {
-        userInfo.push(thisUser);
-        localStorage.setItem('user_info', JSON.stringify(userInfo));
-        thr3eTipTag('#login_page', `${userInfo.user_name},注册成功`);
-        setTimeout(function() { $('.tl_btn').children().click() }, 4000);
-    }else if(!isFinish){
+    if(verifyObj.isFinish && verifyObj.isNotRepet) {
+        thr3eTipTag('#login_page', `${verifyObj.userName},注册成功`);
+        setTimeout(function() { $('.tl_btn').children().click() }, 3500);
+        sessionStorage.setItem('login_user_name', verifyObj.userName);
+    }else if(!verifyObj.isFinish){
         thr3eTipTag('#login_page', '请输入完整的注册信息');
-    }else if(!isNotRepet) {
+    }else if(!verifyObj.isNotRepet) {
         thr3eTipTag('#login_page', '该账号已被注册，请重新输入');
         $.each($('.user_ipt'), function(idx, el){ $(this).val(''); })
     }
@@ -147,32 +129,14 @@ function setRegFunc (){
  * @description 登录按钮功能逻辑
  */
 function setLogFunc (){
-    $('.user_name, .user_pwd').blur();
-    var isFinish = true,
-        isNotRepet = true,
-        isCorrect = false;
-    $.each($('.tips'), function(){
-        isFinish = isFinish && parseInt($(this).attr('data-correct'));
-    });
-    var userInfo = JSON.parse(localStorage.getItem('user_info')),
-        thisUser = {
-        'user_name' : $('.user_name').val(),
-        'user_pwd'  : $('.user_pwd').val()
-    };
-    if (!userInfo) userInfo = [];
-
-    $.each(userInfo, function(idx, val) {
-        if ((thisUser.user_name === val.user_name) && (thisUser.user_pwd === val.user_pwd)) {
-            isCorrect = true;
-        }
-    })
-
-    if(isFinish && isCorrect) {
-        thr3eTipTag('#login_page', `${userInfo.user_name},欢迎回来`);
-        setTimeout(function() { $('.tl_btn').children().click() }, 5000);
-    }else if(!isFinish){
+    var verifyObj = checkUserInfo('.user_name, .user_pwd');
+    if(verifyObj.isFinish && verifyObj.isCorrect) {
+        thr3eTipTag('#login_page', `${verifyObj.userName},欢迎回来`);
+        setTimeout(function() { $('.tl_btn').children().click() }, 3500);
+        sessionStorage.setItem('login_user_name', verifyObj.userName);
+    }else if(!verifyObj.isFinish){
         thr3eTipTag('#login_page', '请输入账号密码');
-    }else if(!isCorrect) {
+    }else if(!verifyObj.isCorrect) {
         thr3eTipTag('#login_page', '请输入正确的账号密码');
         $.each($('.user_ipt'), function(idx, el){ $(this).val(''); })
     }
@@ -216,9 +180,11 @@ function getLocationData (url){
 
 /**
  * @description 调用和风天气api获取当前天气或空气质量，并赋值给xmlDdta对象
- * @param {*} url api接口
+ * @param {string} url api接口
+ * @param {string} location 查询天气的地址
+ * @param {object} obj 待传入数据对象
  */
-function getWeatherData (url, location){
+function getWeatherData (url, location, obj){
     $.ajax({
         url: `https://free-api.heweather.com/s6/${url}?parameters`,
         type: 'GET',
@@ -228,7 +194,7 @@ function getWeatherData (url, location){
         },
         dataType:'json',
         success:function(response){ 
-            xmlData[url] = response['HeWeather6']['0']; 
+            obj[url] = response['HeWeather6']['0']; 
         }
     })
 }
@@ -402,36 +368,45 @@ function xScrollAnimate (sel) {
         if (parseInt($(this).css('left')) < minX) $(this).css('left', `${minX}px`);
     })
 }
-
-function checkUserInfo(el,) {
-    el.blur();
-    var isFinish = true,
+/**
+ * @description 登录注册页面输入判断
+ * @param {String} sel 输入框元素选择器 
+ */
+function checkUserInfo(sel) {
+    $(sel).blur();
+    var isFinish   = true,
         isNotRepet = true,
-        userInfo = JSON.parse(localStorage.getItem('user_info')),
-        thisUser = {};
-    $.each(el, function(){ 
+        isCorrect  = false,
+        userInfo   = JSON.parse(localStorage.getItem('user_info')),
+        thisUser   = {};
+    $.each($(sel), function(idx, val){ 
         //判断每个输入框是否填有内容
-        isFinish = isFinish && parseInt($(this).siblings('.tips').attr('data-correct')); 
-        console
+        if (!$(this).val()){
+            isFinish = false;
+        } else {
+        var key = $(this).attr('class').slice(0, $(this).attr('class').indexOf(' '));
+        thisUser[key] = $(this).val();
+        }
     });
-    
-
     if (!userInfo) userInfo = [];
     $.each(userInfo, function(idx, val) {
-        isNotRepet = isNotRepet && (val.user_name !== thisUser.user_name);
-    })
-    //更新验证码
-    $('.verif_text').text(getVerificationCode(4));
-    //判断注册信息
-    if(isFinish && isNotRepet) {
+        if (val.user_name === thisUser.user_name){
+            isNotRepet = false;
+            if (val.user_pwd === thisUser.user_pwd){
+                isCorrect = true;
+            }
+        }
+    });
+    //注册成功
+    if (isFinish && isNotRepet && thisUser.user_email){
         userInfo.push(thisUser);
         localStorage.setItem('user_info', JSON.stringify(userInfo));
-        thr3eTipTag('#login_page', `${userInfo.user_name},注册成功`);
-        setTimeout(function() { $('.tl_btn').children().click() }, 4000);
-    }else if(!isFinish){
-        thr3eTipTag('#login_page', '请输入完整的注册信息');
-    }else if(!isNotRepet) {
-        thr3eTipTag('#login_page', '该账号已被注册，请重新输入');
-        $.each($('.user_ipt'), function(idx, el){ $(this).val(''); })
     }
+
+    return {
+        'isFinish' : isFinish,
+        'isNotRepet' : isNotRepet,
+        'isCorrect' : isCorrect,
+        'userName' : thisUser.user_name
+        };
 }

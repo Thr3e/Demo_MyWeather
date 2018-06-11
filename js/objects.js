@@ -154,7 +154,7 @@ var WeatherIconRullArr = [
     },
     {
         'regx' : /104|2\d{2}/,
-        'icon' : 'icon-yin'
+        'icon' : 'icon-yintian'
     },
     {
         'regx' : /300/,
