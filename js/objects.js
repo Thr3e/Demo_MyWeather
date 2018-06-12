@@ -286,3 +286,4 @@ var weatherFlashInterval;
 
 //热门城市列表
 var hotCityList = ['长沙','香港','丽江','北京','深圳','武汉','成都','杭州','澳门','苏州'];
+

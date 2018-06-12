@@ -33,11 +33,7 @@ function todayFuncs(location){
 
 // ------------collection------------
 function collectionFuncs() { 
-    $('#header').css('background', '#c6f1e7');
-    $('#header #title i').css('display', 'none'); 
-    $('#header .city').text('我的');
-    $('#header .province').text('COLLECTION');
-    $('#header .icon-jia').attr('class', 'iconfont icon-bi');
+    reloadHeader(1);
     loadWeakWeatherView('.col_weakday_info', '.title_wrap');
     $('#weakday_wrap').append('<div class="col_weather_info"></div>');
     loadWeakWeatherView('.col_weather_info', '.day_weather_wrap');
@@ -47,6 +43,7 @@ function collectionFuncs() {
 
 //---------------news---------------
 function newsFuncs() {
+    reloadHeader(2);
     getHistoryData();
     getStarData();
     getLaughData();
@@ -54,7 +51,7 @@ function newsFuncs() {
 
 //---------------more---------------
 function moreFuncs() {
-
+    reloadHeader(3);
 }
 
 
@@ -64,8 +61,7 @@ function moreFuncs() {
  */
 function loadTodayView (){
     var todayInfo  = xmlData['weather']['daily_forecast'][0];
-    $('#title').find('.city').text(`${xmlData['location/ip'][2]}市`);   
-    $('#title').find('.province').text(`${xmlData['location/ip'][1]}省`);
+    reloadHeader(0)
     $('.today-weather').text(`${todayInfo['tmp_min']}-${todayInfo['tmp_max']}℃`);
     loadMainView();
     loadWeakWeatherView('#today_weakWeatherView');
@@ -318,4 +314,43 @@ function loadCanvas(sel, arr){
         ctx.lineTo(300, arr[0][1] + 5);
         ctx.stroke();
     }
+}
+
+function reloadHeader(page){
+    //头部属性列表
+var headerStyle = [
+    {
+        'backg' : '',
+        'titleI' : '1',
+        'city' : `${xmlData['location/ip'][2]}市`,
+        'province' : `${xmlData['location/ip'][1]}省`,
+        'topleft_btn' : 'jia'
+    },
+    {
+        'backg' : '#c6f1e7',
+        'titleI' : '0',
+        'city' : '我的',
+        'province' : 'COLLECTION',
+        'topleft_btn' : 'bi'
+    },
+    {
+        'backg' : '',
+        'titleI' : '0',
+        'city' : '了解更多',
+        'province' : 'WORLD',
+        'topleft_btn' : 'kongbai'
+    },
+    {
+        'backg' : '',
+        'titleI' : '0',
+        'city' : '设置',
+        'province' : 'SETTING',
+        'topleft_btn' : 'kongbai'
+    },
+];
+    $('#header').css('background', `${headerStyle[page].backg}`);
+    $('#header #title i').css('opacity', `${headerStyle[page].titleI}`); 
+    $('#header .city').text(`${headerStyle[page].city}`);
+    $('#header .province').text(`${headerStyle[page].province}`);
+    $('#header .topleft_btn i').attr('class', `iconfont icon-${headerStyle[page].topleft_btn}`);
 }
