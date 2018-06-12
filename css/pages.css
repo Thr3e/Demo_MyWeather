@@ -121,7 +121,7 @@
     margin: 72px auto;
     border-radius: 25%;
     transition: all .25s linear;
-    background: url(../imgs/2.png) #2196f3;
+    background: url(../imgs/logo.png) #2196f3;
     background-size: cover;
 }
 
@@ -405,7 +405,7 @@
 #today_line{
     width: 30%;
     position: fixed;
-    top: 59px;
+    top: 58px;
     left: 0;
 }
 
@@ -413,7 +413,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 65px;
+    height: 63px;
     background: #c6f1e7;
     border-bottom: 1px solid #59606d;
 }
@@ -430,7 +430,7 @@
 
 #today_line .locate_air {
     background: #f0fff3;
-    height: 84px;
+    height: 81px;
     border-bottom: 1px solid #59606d;
     padding: 15px 20px;
 }
@@ -489,12 +489,91 @@
     font-size: .8rem;
 }
 
-#weakday_wrap .col_weather_info .title_wrap,
-#weakday_wrap .col_weakday_info .day_weather_wrap,
-#weakday_wrap .weather_canvas,
-#weakday_wrap .line_chart_wrap {
-    display: none;
+/* --------------------news--------------------- */
+.body_wrap {
+    padding: 0 10px;
+    color: #59606d;
+    margin-bottom: 50px;
 }
 
-/* --------------------news--------------------- */
+.h3_title{
+    font: normal normal 24px '楷体';
+    border-bottom: 1px solid #59606d;
+    padding-bottom: 6px;
+    margin-bottom: 10px;
+}
+
+#his_today_wrap .content{
+    border-bottom: 1px dashed #59606d55;
+    padding-bottom: 5px;
+}
+
+#his_today_wrap .img_wrap{
+    width: 30%;
+    height: 68px;
+    display: inline-block;
+    margin-top: 10px;
+}
+
+#his_today_wrap .msg_wrap{
+    display: inline-block;
+    vertical-align: top;
+    padding: 5px 10px;
+    width: 68%;
+}
+
+#his_today_wrap .title{
+    font-size: 20px;
+    letter-spacing: 2px;
+}
+
+#his_today_wrap .date{
+    color: #999;
+    font-size: .8rem;
+}
+
+#star_wrap .content_wrap {
+    position: relative;
+}
+
+#star_wrap .const {
+    position: absolute;
+    top: -42px;
+    right: 12px;
+    font: normal normal 24px '楷体';
+}
+
+#star_wrap .general {
+    text-indent: 2rem;
+    font: italic normal 1rem'楷体';
+    margin-bottom: 8px;
+}
+
+#star_wrap .detail_content{
+    display: flex;
+    font-size: .8rem;
+    white-space: pre-line;
+}
+
+#star_wrap .detail_content div{
+    padding: 0 6px;
+}
+
+#laugh_wrap .content_title{
+    font-size: 18px;
+    padding-bottom: 5px;
+}
+
+#laugh_wrap .content_date{
+    font-size: .5rem;
+    color: #999;
+    margin-bottom: 20px;
+}
+
+#laugh_wrap .content_txt{
+    font-size: .9rem;
+    padding-bottom: 20px;
+    border-bottom: 1px dotted #59606d;
+    margin-bottom: 20px;
+}
 /* --------------------more--------------------- */

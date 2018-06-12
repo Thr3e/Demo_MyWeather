@@ -38,16 +38,18 @@ function collectionFuncs() {
     $('#header .city').text('我的');
     $('#header .province').text('COLLECTION');
     $('#header .icon-jia').attr('class', 'iconfont icon-bi');
-    loadWeakWeatherView('.col_weakday_info');
+    loadWeakWeatherView('.col_weakday_info', '.title_wrap');
     $('#weakday_wrap').append('<div class="col_weather_info"></div>');
-    loadWeakWeatherView('.col_weather_info');
+    loadWeakWeatherView('.col_weather_info', '.day_weather_wrap');
 
 }
 
 
 //---------------news---------------
 function newsFuncs() {
-
+    getHistoryData();
+    getStarData();
+    getLaughData();
 }
 
 //---------------more---------------
@@ -105,14 +107,18 @@ function loadMainView () {
 /**
  * @description 加载today页面中的一周天气简报模块
  * @param {string} sel 展示模块的父级选择器
+ * @param {string} children 加载某特定模块的选择器
+ * @param {object} obj 加载某特定地区的数据obj
  */
-function loadWeakWeatherView(sel) {
+function loadWeakWeatherView(sel,children, obj) {
     var nowDate = new Date(),
         time    = nowDate.getTime() / 1000 / 3600 / 24,
         highArr = [],
-        lowArr  = [];
+        lowArr  = [],
+        curObj  = obj ? obj : xmlData;
     getLocalPage('./pages/weak-weather.html', function(response){
-        $(sel).html(response);
+        if (children) {$(sel).html($(response).children(children))}
+        else {$(sel).html(response);};
         //定义滑动动画
         xScrollAnimate('.weak_weather_content');
         $.each($('.weakday'), function(idx, val){
@@ -128,18 +134,18 @@ function loadWeakWeatherView(sel) {
             $(this).addClass(iconClass);
         })
         $.each($('.high_tmp'), function(idx, val) {
-            $(this).text(`${xmlData['weather']['daily_forecast'][idx % 3]['tmp_max']}°`);
+            $(this).text(`${curObj['weather']['daily_forecast'][idx % 3]['tmp_max']}°`);
         })
         $.each($('.low_tmp'), function(idx, val) {
-            $(this).text(`${xmlData['weather']['daily_forecast'][idx % 3]['tmp_min']}°`);
+            $(this).text(`${curObj['weather']['daily_forecast'][idx % 3]['tmp_min']}°`);
         })
         $.each($('.high_idot'), function(idx, val) {
-            var height = xmlData['weather']['daily_forecast'][idx % 3]['tmp_max'] * 2;
+            var height = curObj['weather']['daily_forecast'][idx % 3]['tmp_max'] * 2;
             highArr.push([15 + 39 * idx, 100 - height]);
             $(this).css('bottom', height + '%');
         })
         $.each($('.low_idot'), function(idx, val) {
-            var height = xmlData['weather']['daily_forecast'][idx % 3]['tmp_min'] * 2;
+            var height = curObj['weather']['daily_forecast'][idx % 3]['tmp_min'] * 2;
             lowArr.push([15 + 39 * idx, 100 - height]);
             $(this).css('bottom', height + '%');
         })

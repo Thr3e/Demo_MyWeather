@@ -55,6 +55,13 @@ function setLogPage (){
     $('.log_btn').css('display', 'block');
     $('.reg_btn').css('display', 'none');
     $('.tr_btn').children().click(setRegPage);
+    // var t = setTimeout(function() {
+    //     thr3eTipTag('#login_page', '没有账号？点击右上角注册');
+    // }, 6000);
+    // $('.user_ipt').input(function(){
+    //     clearTimeout(t);
+    //     t = null;
+    // })
     $.each(reg_rule, function(idx, val) {
         $(val.sel).on('blur', function(){
             getUserInfoVerify($(this), val.regx);
@@ -198,6 +205,98 @@ function getWeatherData (url, location, obj){
         }
     })
 }
+
+/**
+ * @description 获取新闻页相关信息
+ * @param {string} url 请求地址
+ * @param {function} success 请求成功的回调函数
+ */
+function getNewsData (url, success){
+    $.ajax({
+        url: url,
+        type : 'GET',
+        dataType : 'json',
+        data : {
+            showapi_sign : 'a61b674541a04194ad0cd2d88122fc2f',
+            showapi_appid : '67286'
+        },
+        success : success
+    })
+}
+
+function getHistoryData() {
+    getNewsData('http://route.showapi.com/119-42', function(response) {
+        var hisData = response['showapi_res_body']['list'],
+            htmlStr = '';
+        $.each(hisData, function(idx, val) {
+            if(idx < 10) {
+                var imgStyle = val.img ? `background: url(${val.img}) center center;background-size: cover` : `background: url(../imgs/loading.gif) center center no-repeat`;
+            htmlStr += `
+            <div class="content">
+                <div class="img_wrap" style="${imgStyle}"></div>
+                <div class="msg_wrap">
+                    <p class="title">${val.title}</p>
+                    <span class="date">${val.year}/${val.month}/${val.day}</span>
+                </div>
+            </div>`
+            } 
+        });
+        $('#his_today_wrap .content_wrap').html(htmlStr);
+    })
+}
+
+function getStarData() {
+    getNewsData('http://route.showapi.com/872-1?star=shizi', function(response){
+        var starData = response['showapi_res_body']['day'],
+            detailData = [
+            {
+                'class' : 'love',
+                'txt'   : starData.love_txt,
+                'star'  : starData.love_star
+            },
+            {
+                'class' : 'work',
+                'txt'   : starData.work_txt,
+                'star'  : starData.work_star
+            },
+            {
+                'class' : 'money',
+                'txt'   : starData.money_txt,
+                'star'  : starData.money_star
+            },
+        ];
+        var htmlStr = `
+        <div class="const">狮子座</div>
+        <div class="general">${starData.general_txt}</div>
+        <div class="detail_content">`;
+        $.each(detailData, function(idx, val){
+            var style = idx === 0 ? '' : 'style="border-left: 4px double #59606d;"'
+            htmlStr += `
+            <div class=${val.class} ${style}>金钱指数:${val.star}颗星
+                金钱运势:${val.txt}</div>`
+        })
+        htmlStr += '</div>'
+        $('#star_wrap .content_wrap').html(htmlStr);
+    })
+}
+
+function getLaughData() {
+    getNewsData('http://route.showapi.com/341-1', function(response){
+        var laughData = response['showapi_res_body']['contentlist'];
+        var htmlStr = '';
+        $.each(laughData, function(idx, val){
+            if(idx < 10){
+                htmlStr += `
+                <div class="content_title">${val.title}</div>
+                <div class="content_date">${val.ct.slice(0, val.ct.length - 5)}</div>
+                <div class="content_txt">${val.text}</div>
+                `
+            }
+        });
+        $('#laugh_wrap .content_wrap').html(htmlStr);
+    });
+}
+
 
 /**
  * @description 获得当日限号
