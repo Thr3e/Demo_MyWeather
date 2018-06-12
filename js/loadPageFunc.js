@@ -11,12 +11,11 @@ function todayFuncs(location){
             if (xmlData['weather']['status'] + xmlData['air/now']['status'] !== 'okok') {
                 //错误信息提示框展示动画
                 $('#error_page').queue(function(){
-                                    $('#error_page').css('display', 'block');
-                                    $('#error_page').dequeue();
+                                    $('#error_page').css('display', 'block').dequeue();
                                 })
                                 .animate({top : 0}, 2000)
                                 .delay(2000)
-                                .animate({top : '-33%'}, 2000)
+                                .animate({top : '-240px'}, 2000)
                                 .queue(function(){
                                     $('#error_page').css('display', 'none');
                                 })
@@ -52,6 +51,19 @@ function newsFuncs() {
 //---------------more---------------
 function moreFuncs() {
     reloadHeader(3);
+    $('.func_wrap').slideUp('fast');
+    $('.set_title').click(function(){            
+        //调用jq封装的动画实现子菜单的显隐
+        $(this).siblings('.func_wrap').slideToggle();
+        //切换i标签的图样
+        $(this).children().toggleClass('icon-xia icon-queren');
+        setRewritePwdFunc();
+    })
+    $('.set_title > i').click(function(){
+        if ($(this).hasClass('icon-queren')){
+            thr3eTipTag('#content', '修改成功');
+        }
+    })
 }
 
 
@@ -94,8 +106,7 @@ function loadMainView () {
     $('.quality_info').text(`${aqiNowInfo.aqi} 空气质量${aqiNowInfo.qlty}`).css({'background': `${colorArr[parseInt(aqiNowInfo.aqi / 50)]}`});
     if (weatherFlashInterval) clearInterval(weatherFlashInterval);
     weatherFlashInterval = setInterval(function(){
-        if (curIndex === 0) curIndex = 1;
-        else curIndex = 0;
+        curIndex = Number(!curIndex);
         $.each(curHtml[curIndex], function(key, val){ $(key).html(val); });
     },4000);
 }

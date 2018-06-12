@@ -102,7 +102,6 @@ function setCityBtn(arr, sel) {
     }, 200);
 }
 
-//TODO:
 /**
  * @description 清除注册页面错误提示信息
  */
@@ -146,6 +145,28 @@ function setLogFunc (){
     }else if(!verifyObj.isCorrect) {
         thr3eTipTag('#login_page', '请输入正确的账号密码');
         $.each($('.user_ipt'), function(idx, el){ $(this).val(''); })
+    }
+}
+
+/**
+ * @description 修改密码功能逻辑
+ */
+function setRewritePwdFunc(){
+    $('#setting_wrap .unlog').click(function(){
+        $('.topright_btn > i').click();
+        $('.set_title')[0].click();
+    })
+    var curUser = JSON.parse(sessionStorage.getItem('curUser'));
+    if (curUser){
+        $('#setting_wrap .unlog').addClass('hide');
+        $('#setting_wrap .change_pwd').removeClass('hide');
+        $('#setting_wrap .user_name').text(curUser);
+        $('#setting_wrap i').click(function(){
+            
+        })
+    }else{
+        $('#setting_wrap .change_pwd').addClass('hide');
+        $('#setting_wrap .unlog').removeClass('hide');
     }
 }
 

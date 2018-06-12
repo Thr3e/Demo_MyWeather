@@ -294,14 +294,17 @@
 #error_page {
     display: none;
     text-align: center;
-    color: #c00;
-    background: #c6f1e7;
+    color: #f0fff3;
     padding: 20px 0;
     position: absolute;
     width: 100%;
-    top: -33%;
+    height: 240px;
+    padding-top: 72px; 
+    top: -240px;
     left: 0;
     z-index: 8;
+    background: url(../imgs/tiptag.png) center center no-repeat;
+    background-size: contain;
 }
 
 #error_page img {
@@ -610,7 +613,7 @@
     padding: 10px 20px;
 }
 
-#setting_wrap .func_wrap input {
+#setting_wrap .change_pwd input {
     width: 100%;
     height: 26px;
     background: #c6f1e7;
@@ -624,4 +627,28 @@
 #setting_wrap .func_wrap p {
     font-size: 14px;
     letter-spacing: 2px;
+}
+
+#setting_wrap .check_news_page div{
+    margin: 18px auto;
+}
+
+#setting_wrap .check_news_page i{
+    background: #fff;
+    width: 16px;
+    height: 16px;
+    display: inline-block;
+    border: 5px solid #59606d;
+    border-radius: 50%;
+    vertical-align: middle;
+}
+
+#setting_wrap .unlog {
+    background: #59606d;
+    color: #f0fff3;
+    margin: 10px auto;
+    text-align: center;
+    width: 72px;
+    line-height: 30px;
+    border-radius: 8px;
 }
