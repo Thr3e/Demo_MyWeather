@@ -36,6 +36,44 @@ function collectionFuncs() {
     loadWeakWeatherView('.col_weakday_info', '.title_wrap');
     $('#weakday_wrap').append('<div class="col_weather_info"></div>');
     loadWeakWeatherView('.col_weather_info', '.day_weather_wrap');
+    var curUser = getCurUser(),
+        curLoc = [],
+        loc_wtr_info = [];
+    if (curUser) {
+        var userCus = getUserCus();
+        userCus.forEach(function(val, idx, arr) {
+            if (val.user_name === curUser.user_name) {
+                curLoc = val.colLocate;
+            }
+        })
+        var i = 0,
+            len = curLoc.length,
+            isRequest = false,
+            tmpInfo = {
+                'location/ip' : null,
+                'weather'     : null,
+                'air/now'     : null 
+            };
+        var t = setInterval(function(){
+            if (i < len){
+                if(!isRequest){
+                    getWeatherData('air/now', curLoc[i][2], tmpInfo);
+                    getWeatherData('weather', curLoc[i][2], tmpInfo);
+                    isRequest = true;
+                }
+                if(tmpInfo['weather'] && tmpInfo['air/now']){
+                    tmpInfo['location/ip'] = curLoc[i];
+                    loadWeakWeatherView('.col_weather_info', '.day_weather_wrap', tmpInfo);
+                    isRequest = false;
+                    i++;
+                }
+            }else {
+                clearInterval(t);
+                t = null;
+            }
+        },200);
+    }
+
 
 }
 
@@ -43,9 +81,23 @@ function collectionFuncs() {
 //---------------news---------------
 function newsFuncs() {
     reloadHeader(2);
-    getHistoryData();
-    getStarData();
-    getLaughData();
+    var curUser = getCurUser();
+    if(!curUser){
+        getHistoryData();
+        getStarData();
+        getLaughData();
+    }else {
+        var userCus = getUserCus(),
+            tmpArr = [];
+        userCus.forEach(function(val, idx, arr){
+            if (val.user_name === curUser.user_name) {
+                tmpArr = val.contents;
+            }
+        })
+        tmpArr.forEach(function(val, idx, arr){
+            eval(val + '()');
+        })
+    }
 }
 
 //---------------more---------------
@@ -59,9 +111,7 @@ function moreFuncs() {
         $(this).children().toggleClass('icon-xia icon-queren');
         setRewritePwdFunc();
         getCustomNewsPage();
-    })
-    // $('.set_pwd i').click();
-    // $('.set_newspage i').click();
+    });
 }
 
 
@@ -122,8 +172,8 @@ function loadWeakWeatherView(sel,children, obj) {
         lowArr  = [],
         curObj  = obj ? obj : xmlData;
     getLocalPage('./pages/weak-weather.html', function(response){
-        if (children) {$(sel).html($(response).children(children))}
-        else {$(sel).html(response);};
+        if (children) $(sel).append($(response).children(children));
+        else $(sel).html(response);
         //定义滑动动画
         xScrollAnimate('.weak_weather_content');
         $.each($('.weakday'), function(idx, val){

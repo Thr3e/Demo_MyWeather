@@ -5,15 +5,15 @@
  */
 function setXmlData (location){
     $.each(xmlData,function(key, val){ if(key !== 'locData')xmlData[key] = null; });
-    if (location) xmlData['location/ip'] = location; 
-    else getLocationData('location/ip');
-
+    xmlData['location/ip'] = location;
     var t = setInterval(function(){
         if (xmlData['location/ip']) {
             getWeatherData('air/now', xmlData['location/ip'][2], xmlData);
             getWeatherData('weather', xmlData['location/ip'][2], xmlData);
             clearInterval(t);
             t = null;
+        } else {
+            getLocationData('location/ip');
         }
     },300);
 }
@@ -101,7 +101,7 @@ function setCityBtn(arr, sel) {
             var curBtn = $(this);
             todayFuncs(curBtn.attr('data-locInfo').split(','));
             $('.search_back_icon').click();
-            var curUser = JSON.parse(sessionStorage.getItem('curUser'));
+            var curUser = getCurUser();
             if(curUser){
                 var localCus = JSON.parse(localStorage.getItem('user_custom')) ? JSON.parse(localStorage.getItem('user_custom')) : [],
                     isRepet = false;
@@ -115,7 +115,7 @@ function setCityBtn(arr, sel) {
                         if (!isRepet) val['colLocate'].push(tmpArr);
                     }
                 })
-                localStorage.setItem('user_custom', JSON.stringify(localCus));
+                setUserCustom(localCus);
             }
         })
     }, 200);
@@ -141,11 +141,11 @@ function setRegFunc (){
         var localCus = localStorage.getItem('user_custom') ? JSON.parse(localStorage.getItem('user_custom')) : [],
             curUserCustom = {
             user_name : verifyObj.userName,
-            contents  : [getHistoryData,getStarData,getLaughData],
+            contents  : ['getHistoryData', 'getStarData', 'getLaughData'],
             colLocate : []
         }
         localCus.push(curUserCustom);
-        localStorage.setItem('user_custom', JSON.stringify(localCus));
+        setUserCustom(localCus);
         thr3eTipTag('#login_page', `${verifyObj.userName},注册成功`);
         setTimeout(function() { $('.tl_btn').children().click() }, 3500);
     }else if(!verifyObj.isFinish){
@@ -180,7 +180,7 @@ function setRewritePwdFunc(){
         $('.topright_btn > i').click();
         $('.set_title')[0].click();
     })
-    var curUser = JSON.parse(sessionStorage.getItem('curUser'));
+    var curUser = getCurUser();
     if (curUser){
         $('#setting_wrap .unlog').addClass('hide');
         $('#setting_wrap .change_pwd').removeClass('hide');
@@ -188,7 +188,7 @@ function setRewritePwdFunc(){
         $('#setting_wrap .set_pwd i').click(function(){
             //修改密码主要逻辑
             if($(this).hasClass('icon-queren')){
-                var userInfo = JSON.parse(localStorage.getItem('user_info')),
+                var userInfo = getUserInfo(),
                     curIdx = 0;
                 $.each(userInfo, function(idx, val){
                     if ((val.user_name === curUser.user_name) && ($('#setting_wrap .last_pws').val() === val.user_pwd)){
@@ -198,9 +198,11 @@ function setRewritePwdFunc(){
                 });
                 if ($('#setting_wrap .new_pws').val() === $('#setting_wrap .conf_pws').val()){
                     userInfo[curIdx].user_pwd = $('#setting_wrap .new_pws').val();
-                    localStorage.setItem('user_info', JSON.stringify(userInfo));
+                    setUserInfo(userInfo);
                     thr3eTipTag('#content', '修改成功');
                     $('.set_pwd input').val('');
+                }else{
+                    thr3eTipTag('#content', '两次密码不一致');
                 }
 
             }
@@ -215,7 +217,50 @@ function setRewritePwdFunc(){
  * @description 自定义新闻页内容
  */
 function getCustomNewsPage() { 
-    $()
+    $('.check_icon').click(function() {
+        if ($(this).attr('data-checked') === 'f') $(this).attr('data-checked', 't').css('background', '#fff');
+        else $(this).attr('data-checked', 'f').css('background', '#59606d');
+    })
+    $('#setting_wrap .set_newspage .icon-queren').click(function(){
+       var tmpArr = [];
+       $.each($('[data-checked="t"]'), function(idx, val){
+           tmpArr.push($(val).attr('data-msg'));
+       });
+       var curUser = getCurUser();
+       if (curUser) {
+           var userCus = JSON.parse(localStorage.getItem('user_custom'));
+           userCus.forEach(function(val, idx, arr){
+                if (val.user_name === curUser.user_name) val.contents = tmpArr;
+           })
+           setUserCustom(userCus);
+           thr3eTipTag('#setting_wrap', '已保存');
+       } else{
+           sessionStorage.setItem('news_page', JSON.stringify(tmpArr));
+           thr3eTipTag('#setting_wrap', '登录可以保存你的设置哦~');
+       }
+
+    });
+}
+
+/**
+ * @description 存入当前登录用户信息
+ */
+function setCurUser(obj) {
+    sessionStorage.setItem('curUser', JSON.stringify(obj));
+}
+
+/**
+ * @description 存入用户组信息
+ */
+function setUserInfo(obj) {
+    localStorage.setItem('user_info', JSON.stringify(obj));
+}
+
+/**
+ * @description 存入当前登录用户信息
+ */
+function setUserCustom(obj) {
+    localStorage.setItem('user_custom', JSON.stringify(obj));
 }
 
 //----------GET-----------
@@ -298,6 +343,7 @@ function getNewsData (url, success){
  */
 function getHistoryData() {
     getNewsData('http://route.showapi.com/119-42', function(response) {
+        $('#his_today_wrap').css('display','block');
         var hisData = response['showapi_res_body']['list'],
             htmlStr = '';
         $.each(hisData, function(idx, val) {
@@ -322,6 +368,7 @@ function getHistoryData() {
  */
 function getStarData() {
     getNewsData('http://route.showapi.com/872-1?star=shizi', function(response){
+        $('#star_wrap').css('display','block');
         var starData = response['showapi_res_body']['day'],
             detailData = [
             {
@@ -360,6 +407,7 @@ function getStarData() {
  */
 function getLaughData() {
     getNewsData('http://route.showapi.com/341-1', function(response){
+        $('#laugh_wrap').css('display','block');
         var laughData = response['showapi_res_body']['contentlist'];
         var htmlStr = '';
         $.each(laughData, function(idx, val){
@@ -480,6 +528,26 @@ function getAirIcon (obj) {
     return iconArr[rate];
 }
 
+/**
+ * @description 获取当前登录用户信息
+ */
+function getCurUser() {
+    return JSON.parse(sessionStorage.getItem('curUser'));
+}
+
+/**
+ * @description 获取本地用户组信息
+ */
+function getUserInfo() {
+    return JSON.parse(localStorage.getItem('user_info'));
+}
+
+/**
+ * @description 获取用户定制信息
+ */
+function getUserCus() {
+    return JSON.parse(localStorage.getItem('user_custom'));
+}
 //----------Others----------
 /**
  * @description 判断当前是否是晚上（20点至次日6点）
@@ -554,7 +622,7 @@ function checkUserInfo(sel) {
     var isFinish   = true,
         isNotRepet = true,
         isCorrect  = false,
-        userInfo   = JSON.parse(localStorage.getItem('user_info')),
+        userInfo   = getUserInfo(),
         thisUser   = {};
     $.each($(sel), function(idx, val){ 
         //判断每个输入框是否填有内容
@@ -562,7 +630,7 @@ function checkUserInfo(sel) {
             isFinish = false;
         } else {
         var key = $(this).attr('class').slice(0, $(this).attr('class').indexOf(' '));
-        thisUser[key] = $(this).val();
+        if ( key !== 'conf_pwd' && key !== 'verf_code') thisUser[key] = $(this).val();
         }
     });
     if (!userInfo) userInfo = [];
@@ -578,13 +646,13 @@ function checkUserInfo(sel) {
     if (isFinish && (isNotRepet || isCorrect)){
         if (thisUser.user_email){
             userInfo.push(thisUser);
-            localStorage.setItem('user_info', JSON.stringify(userInfo));
+            setUserInfo(userInfo);
         }
         var curUser = { 
             user_name : thisUser.user_name,
             status    : 1
         };
-        sessionStorage.setItem('curUser', JSON.stringify(curUser));
+        setCurUser(curUser);
     }
     return {
         'isFinish' : isFinish,
@@ -592,4 +660,18 @@ function checkUserInfo(sel) {
         'isCorrect' : isCorrect,
         'userName' : thisUser.user_name
         };
+}
+
+
+//TODO:delete!!!!!
+function pushFackData(){
+    var arr = [];
+    for (i = 1; i < 10; i++){
+        arr.push({
+            user_name : 'admin' + i,
+            contents  : ['getHistoryData', 'getStarData', 'getLaughData'],
+            colLocate : [['', '四川', '成都'], ['', '湖北', '武汉']]
+        })
+    }
+    setUserCustom(arr);
 }
