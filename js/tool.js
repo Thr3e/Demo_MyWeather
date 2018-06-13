@@ -24,24 +24,35 @@ function setXmlData (location){
  * @param {string} title  子版块主标题
  * @param {string} attr   子版块副标题的icon图表类名
  * @param {string} content 子版块副标题
- * @param {string} detail 子版块主要内容
+ * @param {Array} detail 子版块主要内容
+ * @param {Number} line 子版块列数
  */
-function setHtmlString(title, attr, content, detail) {
+function setHtmlString(title, attr, content, detail, line) {
+    var detailHtml = '<table>';
+    for (var i = 0, len = detail.length; i < Math.ceil(len / line); i++) {
+        detailHtml += '<tr>';
+        for (var j = 0; j < line; j++){
+            detailHtml += `<td>${detail[j + i * line] || ''}</td>`;
+        }
+        detailHtml += '</tr>';
+    }
+    detailHtml += '</table>'
+
     return `
     <div class="detailContent">
         <div class="title">
-                ${title}
+            ${title}
+        </div>
+        <div class="content">
+            <div class="cont_title">
+                ${content}
+                <i class="iconfont ${attr}"></i>
             </div>
-            <div class="content">
-                <div class="cont_title">
-                    ${content}
-                    <i class="iconfont ${attr}"></i>
-                </div>
-                <div class="detail">
-                    ${detail}
-                </div>
+            <div class="detail">
+                ${detailHtml}
             </div>
         </div>
+    </div>
     `;
 }
 
@@ -660,18 +671,4 @@ function checkUserInfo(sel) {
         'isCorrect' : isCorrect,
         'userName' : thisUser.user_name
         };
-}
-
-
-//TODO:delete!!!!!
-function pushFackData(){
-    var arr = [];
-    for (i = 1; i < 10; i++){
-        arr.push({
-            user_name : 'admin' + i,
-            contents  : ['getHistoryData', 'getStarData', 'getLaughData'],
-            colLocate : [['', '四川', '成都'], ['', '湖北', '武汉']]
-        })
-    }
-    setUserCustom(arr);
 }

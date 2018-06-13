@@ -287,3 +287,42 @@ var weatherFlashInterval;
 //热门城市列表
 var hotCityList = ['长沙','香港','丽江','北京','深圳','武汉','成都','杭州','澳门','苏州'];
 
+//定义今日日期信息
+var DateInfo = {
+    day : ((new Date()).toLocaleDateString().split('/'))[2],
+    month : ((new Date()).toLocaleDateString().split('/'))[1] + '月',
+    weakday : '周' + '日一二三四五六'.charAt((new Date()).getDay()),
+    time : (new Date()).toLocaleTimeString()
+}
+
+//头部属性列表
+var headerStyle = [
+    {
+        'backg' : '',
+        'titleI' : '1',
+        'city' : '',
+        'province' : '',
+        'topleft_btn' : 'jia'
+    },
+    {
+        'backg' : '#c6f1e7',
+        'titleI' : '0',
+        'city' : '我的',
+        'province' : 'COLLECTION',
+        'topleft_btn' : 'bi'
+    },
+    {
+        'backg' : '',
+        'titleI' : '0',
+        'city' : '了解更多',
+        'province' : 'WORLD',
+        'topleft_btn' : 'kongbai'
+    },
+    {
+        'backg' : '',
+        'titleI' : '0',
+        'city' : '设置',
+        'province' : 'SETTING',
+        'topleft_btn' : 'kongbai'
+    },
+];
