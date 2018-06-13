@@ -55,13 +55,15 @@ function setLogPage (){
     $('.log_btn').css('display', 'block');
     $('.reg_btn').css('display', 'none');
     $('.tr_btn').children().click(setRegPage);
-    // var t = setTimeout(function() {
-    //     thr3eTipTag('#login_page', '没有账号？点击右上角注册');
-    // }, 6000);
-    // $('.user_ipt').input(function(){
-    //     clearTimeout(t);
-    //     t = null;
-    // })
+    var t = setTimeout(function() {
+        thr3eTipTag('#login_page', '没有账号？点击右上角注册');
+    }, 6000);
+    $('.user_ipt').focus(function(){
+        if (t){
+            clearTimeout(t);
+            t = null;
+        }
+    })
     $.each(reg_rule, function(idx, val) {
         $(val.sel).on('blur', function(){
             getUserInfoVerify($(this), val.regx);
@@ -96,8 +98,25 @@ function setCityBtn(arr, sel) {
     $(sel).html(htmlStr);
     setTimeout(function() {
         $('.city_btn').click(function() {
-            todayFuncs($(this).attr('data-locInfo').split(','));
+            var curBtn = $(this);
+            todayFuncs(curBtn.attr('data-locInfo').split(','));
             $('.search_back_icon').click();
+            var curUser = JSON.parse(sessionStorage.getItem('curUser'));
+            if(curUser){
+                var localCus = JSON.parse(localStorage.getItem('user_custom')) ? JSON.parse(localStorage.getItem('user_custom')) : [],
+                    isRepet = false;
+                localCus.forEach(function(val, idx, arr) {
+                    if (val.user_name === curUser.user_name) {
+                        var tmpArr = curBtn.attr('data-locInfo').split(',');
+                        val['colLocate'].forEach(function(val, idx, arr){
+                            //数组无法直接通过===进行对比！！！！！坑
+                            if (JSON.stringify(val) === JSON.stringify(tmpArr)) isRepet = true;
+                        });
+                        if (!isRepet) val['colLocate'].push(tmpArr);
+                    }
+                })
+                localStorage.setItem('user_custom', JSON.stringify(localCus));
+            }
         })
     }, 200);
 }
@@ -119,16 +138,22 @@ function setRegFunc (){
     $('.verif_text').text(getVerificationCode(4));
     //判断注册信息
     if(verifyObj.isFinish && verifyObj.isNotRepet) {
+        var localCus = localStorage.getItem('user_custom') ? JSON.parse(localStorage.getItem('user_custom')) : [],
+            curUserCustom = {
+            user_name : verifyObj.userName,
+            contents  : [getHistoryData,getStarData,getLaughData],
+            colLocate : []
+        }
+        localCus.push(curUserCustom);
+        localStorage.setItem('user_custom', JSON.stringify(localCus));
         thr3eTipTag('#login_page', `${verifyObj.userName},注册成功`);
         setTimeout(function() { $('.tl_btn').children().click() }, 3500);
-        sessionStorage.setItem('login_user_name', verifyObj.userName);
     }else if(!verifyObj.isFinish){
         thr3eTipTag('#login_page', '请输入完整的注册信息');
     }else if(!verifyObj.isNotRepet) {
         thr3eTipTag('#login_page', '该账号已被注册，请重新输入');
         $.each($('.user_ipt'), function(idx, el){ $(this).val(''); })
     }
-    
 }
 
 /**
@@ -139,7 +164,6 @@ function setLogFunc (){
     if(verifyObj.isFinish && verifyObj.isCorrect) {
         thr3eTipTag('#login_page', `${verifyObj.userName},欢迎回来`);
         setTimeout(function() { $('.tl_btn').children().click() }, 3500);
-        sessionStorage.setItem('login_user_name', verifyObj.userName);
     }else if(!verifyObj.isFinish){
         thr3eTipTag('#login_page', '请输入账号密码');
     }else if(!verifyObj.isCorrect) {
@@ -160,14 +184,38 @@ function setRewritePwdFunc(){
     if (curUser){
         $('#setting_wrap .unlog').addClass('hide');
         $('#setting_wrap .change_pwd').removeClass('hide');
-        $('#setting_wrap .user_name').text(curUser);
-        $('#setting_wrap i').click(function(){
-            
+        $('#setting_wrap .user_name').text(curUser.user_name);
+        $('#setting_wrap .set_pwd i').click(function(){
+            //修改密码主要逻辑
+            if($(this).hasClass('icon-queren')){
+                var userInfo = JSON.parse(localStorage.getItem('user_info')),
+                    curIdx = 0;
+                $.each(userInfo, function(idx, val){
+                    if ((val.user_name === curUser.user_name) && ($('#setting_wrap .last_pws').val() === val.user_pwd)){
+                        curIdx = idx;
+                        return false;
+                    }
+                });
+                if ($('#setting_wrap .new_pws').val() === $('#setting_wrap .conf_pws').val()){
+                    userInfo[curIdx].user_pwd = $('#setting_wrap .new_pws').val();
+                    localStorage.setItem('user_info', JSON.stringify(userInfo));
+                    thr3eTipTag('#content', '修改成功');
+                    $('.set_pwd input').val('');
+                }
+
+            }
         })
     }else{
         $('#setting_wrap .change_pwd').addClass('hide');
         $('#setting_wrap .unlog').removeClass('hide');
     }
+}
+
+/**
+ * @description 自定义新闻页内容
+ */
+function getCustomNewsPage() { 
+    $()
 }
 
 //----------GET-----------
@@ -245,6 +293,9 @@ function getNewsData (url, success){
     })
 }
 
+/**
+ * @description 加载历史上的今天模块
+ */
 function getHistoryData() {
     getNewsData('http://route.showapi.com/119-42', function(response) {
         var hisData = response['showapi_res_body']['list'],
@@ -266,6 +317,9 @@ function getHistoryData() {
     })
 }
 
+/**
+ * @description 加载星座运势模块
+ */
 function getStarData() {
     getNewsData('http://route.showapi.com/872-1?star=shizi', function(response){
         var starData = response['showapi_res_body']['day'],
@@ -301,6 +355,9 @@ function getStarData() {
     })
 }
 
+/**
+ * @description 加载每日一笑模块
+ */
 function getLaughData() {
     getNewsData('http://route.showapi.com/341-1', function(response){
         var laughData = response['showapi_res_body']['contentlist'];
@@ -518,11 +575,17 @@ function checkUserInfo(sel) {
         }
     });
     //注册成功
-    if (isFinish && isNotRepet && thisUser.user_email){
-        userInfo.push(thisUser);
-        localStorage.setItem('user_info', JSON.stringify(userInfo));
+    if (isFinish && (isNotRepet || isCorrect)){
+        if (thisUser.user_email){
+            userInfo.push(thisUser);
+            localStorage.setItem('user_info', JSON.stringify(userInfo));
+        }
+        var curUser = { 
+            user_name : thisUser.user_name,
+            status    : 1
+        };
+        sessionStorage.setItem('curUser', JSON.stringify(curUser));
     }
-
     return {
         'isFinish' : isFinish,
         'isNotRepet' : isNotRepet,

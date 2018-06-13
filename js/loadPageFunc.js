@@ -58,12 +58,10 @@ function moreFuncs() {
         //切换i标签的图样
         $(this).children().toggleClass('icon-xia icon-queren');
         setRewritePwdFunc();
+        getCustomNewsPage();
     })
-    $('.set_title > i').click(function(){
-        if ($(this).hasClass('icon-queren')){
-            thr3eTipTag('#content', '修改成功');
-        }
-    })
+    // $('.set_pwd i').click();
+    // $('.set_newspage i').click();
 }
 
 
