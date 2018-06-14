@@ -119,7 +119,7 @@ function loadMainView () {
     },4000);
 }
 
-function loadLocateAirView(sel, obj){
+function loadLocateAirView(sel, obj, idx){
     var htmlStr = `
         <div class="locate_air">
             <h3 class="locate">${obj['location/ip'][2]}市</h3>
@@ -127,7 +127,7 @@ function loadLocateAirView(sel, obj){
         </div>
     `
     $(sel).append(htmlStr);
-    $('.locate_air_wrap .air').css('background', colorArr[parseInt(obj['air/now']['air_now_city']['aqi'] / 50)]);
+    $('.locate_air_wrap .air').eq(idx).css('background', colorArr[parseInt(obj['air/now']['air_now_city']['aqi'] / 50)]);
 }
 
 /**
@@ -358,7 +358,7 @@ function loadCollectDetailView(){
                 }
                 if(tmpInfo['weather'] && tmpInfo['air/now']){
                     tmpInfo['location/ip'] = curLoc[i];
-                    loadLocateAirView('.locate_air_wrap', tmpInfo);
+                    loadLocateAirView('.locate_air_wrap', tmpInfo, i);
                     loadWeakWeatherView('.col_weather_info', '.day_weather_wrap', tmpInfo);
                     isRequest = false;
                     tmpInfo = null;
