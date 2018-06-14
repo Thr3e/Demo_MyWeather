@@ -120,14 +120,16 @@ function loadMainView () {
 }
 
 function loadLocateAirView(sel, obj, idx){
-    var htmlStr = `
-        <div class="locate_air">
-            <h3 class="locate">${obj['location/ip'][2]}市</h3>
-            <div class="air">${obj['air/now']['air_now_city']['aqi']}&nbsp${obj['air/now']['air_now_city']['qlty']}</div>
-        </div>
-    `
-    $(sel).append(htmlStr);
-    $('.locate_air_wrap .air').eq(idx).css('background', colorArr[parseInt(obj['air/now']['air_now_city']['aqi'] / 50)]);
+    if(obj.status === 'ok' || 1){
+        var htmlStr = `
+            <div class="locate_air">
+                <h3 class="locate">${obj['location/ip'][2]}市</h3>
+                <div class="air">${obj['air/now']['air_now_city']['aqi']}&nbsp${obj['air/now']['air_now_city']['qlty']}</div>
+            </div>
+        `
+        $(sel).append(htmlStr);
+        $('.locate_air_wrap .air').eq(idx).css('background', colorArr[parseInt(obj['air/now']['air_now_city']['aqi'] / 50)]);
+    }
 }
 
 /**

@@ -215,6 +215,7 @@
 }
 
 #login_page .log_btn,
+#login_page .unlog_btn,
 #login_page .reg_btn {
     background: #70acb1;
     font-weight: bold;

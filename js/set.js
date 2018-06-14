@@ -60,26 +60,37 @@ function setHtmlString(title, attr, content, detail, line) {
  * @description 设置登录页相关功能
  */
 function setLogPage (){
-    setTipsClear();
-    $('.login_wrap').css('height', '100px');
-    $('.logo').css({'width':'256px', 'height':'256px', 'margin':'72px auto'});
-    $('.log_btn').css('display', 'block');
-    $('.reg_btn').css('display', 'none');
-    $('.tr_btn').children().click(setRegPage);
-    var t = setTimeout(function() {
-        thr3eTipTag('#login_page', '没有账号？点击右上角注册');
-    }, 6000);
-    $('.user_ipt').focus(function(){
-        if (t){
-            clearTimeout(t);
-            t = null;
-        }
-    })
-    $.each(reg_rule, function(idx, val) {
-        $(val.sel).on('blur', function(){
-            getUserInfoVerify($(this), val.regx);
+    if (getCurUser()){
+        $('.login_wrap').css('height', '0');
+        $('.log_btn').css('display', 'none');
+        $('.reg_btn').css('display', 'none');
+        $('.unlog_btn').css('display', 'block').click(function(){
+            sessionStorage.removeItem('curUser');
+            $('.tl_btn').children().click();
+            thr3eTipTag('#content', "已注销！");
+        });
+    }else{
+        setTipsClear();
+        $('.login_wrap').css('height', '100px');
+        $('.logo').css({'width':'256px', 'height':'256px', 'margin':'72px auto'});
+        $('.log_btn').css('display', 'block');
+        $('.reg_btn').css('display', 'none');
+        $('.tr_btn').children().click(setRegPage);
+        var t = setTimeout(function() {
+            thr3eTipTag('#login_page', '没有账号？点击右上角注册');
+        }, 6000);
+        $('.user_ipt').focus(function(){
+            if (t){
+                clearTimeout(t);
+                t = null;
+            }
         })
-    ;})
+        $.each(reg_rule, function(idx, val) {
+            $(val.sel).on('blur', function(){
+                getUserInfoVerify($(this), val.regx);
+            })
+        ;})
+    }
 }
 
 /**
@@ -157,8 +168,8 @@ function setRegFunc (){
         }
         localCus.push(curUserCustom);
         setUserCustom(localCus);
-        thr3eTipTag('#login_page', `${verifyObj.userName},注册成功`);
-        setTimeout(function() { $('.tl_btn').children().click() }, 3500);
+        thr3eTipTag('#content', `${verifyObj.userName},注册成功`);
+        $('.tl_btn').children().click();
     }else if(!verifyObj.isFinish){
         thr3eTipTag('#login_page', '请输入完整的注册信息');
     }else if(!verifyObj.isNotRepet) {
@@ -173,8 +184,8 @@ function setRegFunc (){
 function setLogFunc (){
     var verifyObj = checkUserInfo('.user_name, .user_pwd');
     if(verifyObj.isFinish && verifyObj.isCorrect) {
-        thr3eTipTag('#login_page', `${verifyObj.userName},欢迎回来`);
-        setTimeout(function() { $('.tl_btn').children().click() }, 3500);
+        thr3eTipTag('#content', `${verifyObj.userName},欢迎回来`);
+        $('.tl_btn').children().click();
     }else if(!verifyObj.isFinish){
         thr3eTipTag('#login_page', '请输入账号密码');
     }else if(!verifyObj.isCorrect) {
